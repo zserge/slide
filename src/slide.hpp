@@ -32,7 +32,6 @@ static Deck parse(const std::string &text) {
     for (; *it != '\n' && it < end; ++it, ++lineno) {
       std::string text;
       Style style{Style::Normal};
-      Token token{};
       switch (*it) {
       case '@':
         ++it;
