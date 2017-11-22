@@ -1,15 +1,15 @@
 #ifndef SLIDE_HPP
 #define SLIDE_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace slide {
 
 //
 // Parser
 //
-	
+
 enum Style { Normal, Strong, Header, Monospace };
 
 struct Token {
@@ -34,55 +34,63 @@ static Deck parse(const std::string &text) {
       Style style{Style::Normal};
       switch (*it) {
       case '@':
-        ++it;
-				// TODO: parse image path and geometry
-				for (; it < end && *it != '\n'; ++it) {
-				}
-        break;
+	++it;
+	// TODO: parse image path and geometry
+	for (; it < end && *it != '\n'; ++it) {
+	}
+	break;
       case '#':
-        ++it;
-        style = Style::Header;
-        for (; it < end && *it == ' '; ++it)
-          ;
-        break;
+	++it;
+	style = Style::Header;
+	for (; it < end && *it == ' '; ++it)
+	  ;
+	break;
       case ' ':
-        ++it;
-        if (it < end && *it == ' ') {
-          ++it;
-          style = Style::Monospace;
-        } else {
-          text.push_back(' ');
-        }
-        break;
+	++it;
+	if (it < end && *it == ' ') {
+	  ++it;
+	  style = Style::Monospace;
+	} else {
+	  text.push_back(' ');
+	}
+	break;
       case '.':
-        ++it;
-        break;
+	++it;
+	break;
       }
+      bool insert_empty_token = true;
       for (; it < end && *it != '\n'; ++it) {
-        if (style == Style::Normal && *it == '*') {
-          ++it;
-          if (it < end && *it != ' ') {
-            std::string em;
-            for (; it < end && *it != '*' && *it != '\n'; ++it) {
-              em.push_back(*it);
-            }
-            if (*it == '*') {
-              slide.push_back(Token{lineno, style, text});
-              slide.push_back(Token{lineno, Style::Strong, em});
-              text = "";
-            } else {
-              text.push_back('*');
-              text.append(em);
-            }
-          } else {
-            text.push_back('*');
-            text.push_back(*it);
-          }
-        } else {
-          text.push_back(*it);
-        }
+	if (style == Style::Normal && *it == '*') {
+	  ++it;
+	  if (it < end && *it != ' ' && *it != '*') {
+	    std::string em;
+	    for (; it < end && *it != '*' && *it != '\n'; ++it) {
+	      em.push_back(*it);
+	    }
+	    if (*it == '*') {
+	      if (text.size() > 0) {
+		slide.push_back(Token{lineno, style, text});
+	      }
+	      slide.push_back(Token{lineno, Style::Strong, em});
+	      insert_empty_token = false;
+	      text = "";
+	    } else {
+	      text.push_back('*');
+	      text.append(em);
+	    }
+	  } else {
+	    text.push_back('*');
+	    if (*it != '*') {
+	      text.push_back(*it);
+	    }
+	  }
+	} else {
+	  text.push_back(*it);
+	}
       }
-      slide.push_back(Token{lineno, style, text});
+      if (insert_empty_token || text.size() > 0) {
+	slide.push_back(Token{lineno, style, text});
+      }
     }
     // Skip trailing newlines
     for (; *it == '\n' && it < end; ++it, ++lineno)
@@ -110,7 +118,7 @@ public:
 
   virtual void bg(Color color) = 0;
   virtual void text(const std::string &text, Color color, int x, int y,
-                    Style style, float scale) = 0;
+		    Style style, float scale) = 0;
 };
 
 class Document : public Page {
@@ -120,7 +128,7 @@ public:
 };
 
 static std::pair<int, int> render_scale(Page &p, Slide &slide, Color color,
-                                        int xoff, int yoff, float scale) {
+					int xoff, int yoff, float scale) {
   int w = 0;
   int h = 0;
   int line_height = 0;
@@ -156,12 +164,12 @@ static void render(Page &page, Slide &slide, Color fg, Color bg) {
   float scale = 1.f;
   auto size = render_scale(page, slide, 0, 0, 0, scale);
   scale = std::min(page.width() * 0.8 / size.first,
-                   page.height() * 0.8 / size.second);
+		   page.height() * 0.8 / size.second);
   size = render_scale(page, slide, 0, 0, 0, scale);
 
   page.bg(bg);
   render_scale(page, slide, fg, (page.width() - size.first) / 2,
-               (page.height() - size.second) / 2, scale);
+	       (page.height() - size.second) / 2, scale);
 }
 
 } // namespace slide
@@ -215,7 +223,7 @@ public:
   }
 
   void text(const std::string &text, Color color, int x, int y, Style style,
-            float scale) {
+	    float scale) {
     cairo_font_extents_t fe;
     this->set_source_color(color);
     this->set_font(style, scale);
@@ -229,20 +237,20 @@ private:
     switch (style) {
     case Normal:
       cairo_select_font_face(this->cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
-                             CAIRO_FONT_WEIGHT_NORMAL);
+			     CAIRO_FONT_WEIGHT_NORMAL);
       break;
     case Strong:
       cairo_select_font_face(this->cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
-                             CAIRO_FONT_WEIGHT_BOLD);
+			     CAIRO_FONT_WEIGHT_BOLD);
       break;
     case Header:
       cairo_select_font_face(this->cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
-                             CAIRO_FONT_WEIGHT_BOLD);
+			     CAIRO_FONT_WEIGHT_BOLD);
       scale = scale * 1.6f;
       break;
     case Monospace:
       cairo_select_font_face(this->cr, "Monospace", CAIRO_FONT_SLANT_NORMAL,
-                             CAIRO_FONT_WEIGHT_NORMAL);
+			     CAIRO_FONT_WEIGHT_NORMAL);
       break;
     }
     cairo_set_font_size(this->cr, 16 * scale);
