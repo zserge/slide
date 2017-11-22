@@ -9,3 +9,10 @@ addons:
     packages:
       - g++-4.9
       - cmake
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - ./test/slide_test
