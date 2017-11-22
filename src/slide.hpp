@@ -10,9 +10,9 @@ namespace slide {
 // Parser
 //
 	
-using Style = enum { Normal, Strong, Header, Monospace };
+enum Style { Normal, Strong, Header, Monospace };
 
-using Token = struct {
+struct Token {
   const int line;
   const Style style;
   const std::string text;
