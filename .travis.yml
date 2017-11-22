@@ -9,6 +9,7 @@ addons:
     packages:
       - g++-4.9
       - cmake
+      - libcairo2-dev
 
 script:
   - mkdir build
