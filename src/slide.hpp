@@ -13,6 +13,7 @@ namespace slide {
 enum Style { Normal, Strong, Header, Monospace };
 
 struct Token {
+  const long pos;
   const int line;
   const Style style;
   const std::string text;
@@ -23,7 +24,8 @@ using Deck = std::vector<Slide>;
 static Deck parse(const std::string &text) {
   Deck deck{};
   auto lineno = 0;
-  for (auto it = text.cbegin(), end = text.cend(); it < end;) {
+  auto begin = text.cbegin();
+  for (auto it = begin, end = text.cend(); it < end;) {
     // Skip leading newlines
     for (; *it == '\n' && it < end; ++it, ++lineno)
       ;
@@ -69,9 +71,11 @@ static Deck parse(const std::string &text) {
 	    }
 	    if (*it == '*') {
 	      if (text.size() > 0) {
-		slide.push_back(Token{lineno, style, text});
+		slide.push_back(
+		    Token{std::distance(begin, it), lineno, style, text});
 	      }
-	      slide.push_back(Token{lineno, Style::Strong, em});
+	      slide.push_back(
+		  Token{std::distance(begin, it), lineno, Style::Strong, em});
 	      insert_empty_token = false;
 	      text = "";
 	    } else {
@@ -89,7 +93,7 @@ static Deck parse(const std::string &text) {
 	}
       }
       if (insert_empty_token || text.size() > 0) {
-	slide.push_back(Token{lineno, style, text});
+	slide.push_back(Token{std::distance(begin, it), lineno, style, text});
       }
     }
     // Skip trailing newlines
