@@ -109,8 +109,9 @@ private:
     auto json = nlohmann::json({});
     json["text"] = this->current_text;
     json["previewDataURI"] = this->preview_data_uri;
-    webview_eval(&this->webview,
-		 ("app.state=" + json.dump() + "; render()").c_str());
+    webview_eval(
+	&this->webview,
+	("window.app.state=" + json.dump() + "; window.render()").c_str());
   }
 
   slide::Deck deck;
