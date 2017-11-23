@@ -38,7 +38,6 @@ matrix:
       env:
         - CMAKE=cmake
       before_install:
-        - brew install cmake
         - brew install cairo
 
 script:
