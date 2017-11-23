@@ -31,8 +31,8 @@ matrix:
               key_url: 'http://pkg.mxe.cc/repos/apt/conf/mxeapt.gpg'
           packages:
             - mxe-i686-w64-mingw32.static-gcc
+            - mxe-i686-w64-mingw32.static-freetype
             - mxe-i686-w64-mingw32.static-cairo
-            - mxe-i686-w64-mingw32.static-harfbuzz
             - mxe-x86-64-unknown-linux-gnu-cmake
 
 script:
