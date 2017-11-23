@@ -15,10 +15,10 @@ matrix:
             - libcairo2-dev
             - libwebkitgtk-3.0-dev
           env:
-            - CC=gcc-7
-            - CXX=g++-7
+            - COMPILER=g++-7
 
 script:
+  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
   - mkdir build
   - cd build
   - cmake ..
