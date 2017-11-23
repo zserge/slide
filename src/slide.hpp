@@ -192,20 +192,20 @@ namespace cairo {
 static void set_font(cairo_t *cr, Style style, float scale) {
   switch (style) {
   case Normal:
-    cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
+    cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL,
 			   CAIRO_FONT_WEIGHT_NORMAL);
     break;
   case Strong:
-    cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
+    cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL,
 			   CAIRO_FONT_WEIGHT_BOLD);
     break;
   case Header:
-    cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
+    cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL,
 			   CAIRO_FONT_WEIGHT_BOLD);
     scale = scale * 1.6f;
     break;
   case Monospace:
-    cairo_select_font_face(cr, "Monospace", CAIRO_FONT_SLANT_NORMAL,
+    cairo_select_font_face(cr, "monospace", CAIRO_FONT_SLANT_NORMAL,
 			   CAIRO_FONT_WEIGHT_NORMAL);
     break;
   }
