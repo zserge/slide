@@ -7,6 +7,7 @@ matrix:
     - os: linux
       env:
         - COMPILER=g++-7
+        - CMAKE=cmake
       addons:
         apt:
           sources:
@@ -16,11 +17,23 @@ matrix:
             - cmake
             - libcairo2-dev
             - libwebkitgtk-3.0-dev
+    - os: linux
+      env:
+        - PATH="/usr/lib/mxe/usr/bin/:$PATH"
+        - COMPILER=i686-w64-mingw32.static-g++
+        - CMAKE=i686-w64-mingw32.static-cmake
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - mxe-i686-w64-mingw32.shared-gcc
+            - mxe-i686-w64-mingw32.shared-cairo
 
 script:
   - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
   - mkdir build
   - cd build
-  - cmake ..
+  - ${CMAKE} ..
   - make
   - ./test/slide_test
