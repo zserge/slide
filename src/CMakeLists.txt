@@ -1,5 +1,5 @@
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-find_package(Cairo)
+find_package(PkgConfig)
+pkg_check_modules(Cairo cairo)
 
 add_library(slide-core INTERFACE)
 target_include_directories(slide-core INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${Cairo_INCLUDE_DIRS})
