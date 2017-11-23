@@ -10,7 +10,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-7
+            - g++-4.9
             - cmake
             - libcairo2-dev
             - libwebkitgtk-3.0-dev
