@@ -5,6 +5,8 @@ language: cpp
 matrix:
   include:
     - os: linux
+      env:
+        - COMPILER=g++-7
       addons:
         apt:
           sources:
@@ -14,8 +16,6 @@ matrix:
             - cmake
             - libcairo2-dev
             - libwebkitgtk-3.0-dev
-          env:
-            - COMPILER=g++-7
 
 script:
   - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
