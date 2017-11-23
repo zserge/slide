@@ -256,7 +256,8 @@ namespace base64 {
 static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 					"abcdefghijklmnopqrstuvwxyz"
 					"0123456789+/";
-std::string encode(unsigned char const *bytes_to_encode, unsigned int in_len) {
+std::string encode(unsigned char const *bytes_to_encode, unsigned int in_len,
+		   bool url) {
   std::string ret;
   int i = 0;
   int j = 0;
@@ -272,7 +273,14 @@ std::string encode(unsigned char const *bytes_to_encode, unsigned int in_len) {
 	  ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
       char_array_4[3] = char_array_3[2] & 0x3f;
       for (i = 0; (i < 4); i++) {
-	ret += base64_chars[char_array_4[i]];
+	char c = base64_chars[char_array_4[i]];
+	if (url && c == '+') {
+	  ret += "%2B";
+	} else if (url && c == '/') {
+	  ret += "%2F";
+	} else {
+	  ret += c;
+	}
       }
       i = 0;
     }
@@ -288,10 +296,21 @@ std::string encode(unsigned char const *bytes_to_encode, unsigned int in_len) {
 	((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
     char_array_4[3] = char_array_3[2] & 0x3f;
     for (j = 0; (j < i + 1); j++) {
-      ret += base64_chars[char_array_4[j]];
+      char c = base64_chars[char_array_4[i]];
+      if (url && c == '+') {
+	ret += "%2B";
+      } else if (url && c == '/') {
+	ret += "%2F";
+      } else {
+	ret += c;
+      }
     }
     while ((i++ < 3)) {
-      ret += '=';
+      if (url) {
+	ret += "%3D";
+      } else {
+	ret += "=";
+      }
     }
   }
   return ret;
@@ -329,16 +348,20 @@ public:
   }
 
   std::string dataURI() {
-    std::string b64 = "data:image/png;base64,";
+    std::vector<unsigned char> raw;
     cairo_surface_write_to_png_stream(
 	this->surface,
 	[](void *closure, const unsigned char *data, unsigned int length) {
-	  std::string *b64 = (std::string *)closure;
-	  b64->append(base64::encode(data, length));
+	  std::vector<unsigned char> *raw =
+	      (std::vector<unsigned char> *)(closure);
+	  for (unsigned int i = 0; i < length; i++) {
+	    raw->push_back(data[i]);
+	  }
 	  return CAIRO_STATUS_SUCCESS;
 	},
-	&b64);
-    return b64;
+	&raw);
+    return "data:image/png;base64," +
+	   base64::encode(raw.data(), raw.size(), true);
   }
 
 private:
