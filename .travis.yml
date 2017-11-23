@@ -8,7 +8,6 @@ matrix:
       env:
         - COMPILER=g++-7
         - CMAKE=cmake
-        - RUN_TESTS=true
       addons:
         apt:
           sources:
@@ -23,7 +22,7 @@ matrix:
         - PATH="/usr/lib/mxe/usr/bin/:$PATH"
         - COMPILER=i686-w64-mingw32.static-g++
         - CMAKE=i686-w64-mingw32.static-cmake
-        - RUN_TESTS=false
+        - SKIP_TESTS=true
       addons:
         apt:
           sources:
@@ -41,4 +40,4 @@ script:
   - cd build
   - ${CMAKE} ..
   - make
-  - $RUN_TESTS && ./test/slide_test
+  - if [ -z "${SKIP_TESTS}" ] ; then ./test/slide_test ; fi
