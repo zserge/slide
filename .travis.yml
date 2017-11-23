@@ -8,6 +8,7 @@ matrix:
       env:
         - COMPILER=g++-7
         - CMAKE=cmake
+        - RUN_TESTS=true
       addons:
         apt:
           sources:
@@ -22,14 +23,16 @@ matrix:
         - PATH="/usr/lib/mxe/usr/bin/:$PATH"
         - COMPILER=i686-w64-mingw32.static-g++
         - CMAKE=i686-w64-mingw32.static-cmake
+        - RUN_TESTS=false
       addons:
         apt:
           sources:
-            - sourceline: 'deb http://pkg.mxe.cc/repos/apt/debian jessie main'
+            - sourceline: 'deb http://pkg.mxe.cc/repos/apt/debian wheezy main'
               key_url: 'http://pkg.mxe.cc/repos/apt/conf/mxeapt.gpg'
           packages:
             - mxe-i686-w64-mingw32.static-gcc
             - mxe-i686-w64-mingw32.static-cairo
+            - mxe-i686-w64-mingw32.static-harfbuzz
             - mxe-x86-64-unknown-linux-gnu-cmake
 
 script:
@@ -38,4 +41,4 @@ script:
   - cd build
   - ${CMAKE} ..
   - make
-  - ./test/slide_test
+  - $RUN_TESTS && ./test/slide_test
