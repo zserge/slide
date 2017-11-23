@@ -25,7 +25,8 @@ matrix:
       addons:
         apt:
           sources:
-            - ubuntu-toolchain-r-test
+            - sourceline: 'deb http://pkg.mxe.cc/repos/apt/debian jessie main'
+              key_url: 'http://pkg.mxe.cc/repos/apt/conf/mxeapt.gpg'
           packages:
             - mxe-i686-w64-mingw32.shared-gcc
             - mxe-i686-w64-mingw32.shared-cairo
