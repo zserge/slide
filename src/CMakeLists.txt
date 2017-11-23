@@ -26,5 +26,5 @@ endif()
 add_library(json INTERFACE)
 target_include_directories(json INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${Cairo_INCLUDE_DIRS})
 
-add_executable(slide main.cpp)
+add_executable(slide WIN32 main.cpp)
 target_link_libraries(slide PRIVATE slide-core webview json)
