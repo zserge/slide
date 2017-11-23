@@ -28,8 +28,9 @@ matrix:
             - sourceline: 'deb http://pkg.mxe.cc/repos/apt/debian jessie main'
               key_url: 'http://pkg.mxe.cc/repos/apt/conf/mxeapt.gpg'
           packages:
-            - mxe-i686-w64-mingw32.shared-gcc
-            - mxe-i686-w64-mingw32.shared-cairo
+            - mxe-i686-w64-mingw32.static-gcc
+            - mxe-i686-w64-mingw32.static-cairo
+            - mxe-x86-64-unknown-linux-gnu-cmake
 
 script:
   - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
