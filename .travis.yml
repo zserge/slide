@@ -27,7 +27,7 @@ matrix:
       addons:
         apt:
           sources:
-            - sourceline: 'deb http://pkg.mxe.cc/repos/apt/debian jessie main'
+            - sourceline: 'deb http://pkg.mxe.cc/repos/apt/debian wheezy main'
               key_url: 'http://pkg.mxe.cc/repos/apt/conf/mxeapt.gpg'
           packages:
             - mxe-i686-w64-mingw32.static-gcc
