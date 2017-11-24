@@ -12,6 +12,9 @@ add_subdirectory(test)
 # Packaging
 #
 if(APPLE)
+	set(CPACK_GENERATOR "DragNDrop")
+	install(FILES res/Info.plist DESTINATION "slide.app/Contents")
+	install(FILES res/slide.icns DESTINATION "slide.app/Contents/Resources")
 elseif(WIN32)
 else()
 	install(FILES res/slide.desktop DESTINATION "/usr/share/applications")
