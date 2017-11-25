@@ -53,7 +53,7 @@ private:
     } else if (cmd == "open_file") {
       char path[PATH_MAX];
       webview_dialog(&this->webview, WEBVIEW_DIALOG_TYPE_OPEN, 0,
-		     "New presentation...", NULL, path, sizeof(path) - 1);
+		     "Open presentation...", NULL, path, sizeof(path) - 1);
       if (strlen(path) != 0) {
 	this->current_file = path;
 	webview_set_title(&this->webview,
@@ -67,7 +67,7 @@ private:
     } else if (cmd == "export_pdf") {
       char path[PATH_MAX];
       webview_dialog(&this->webview, WEBVIEW_DIALOG_TYPE_SAVE, 0,
-		     "New presentation...", NULL, path, sizeof(path) - 1);
+		     "Export PDF...", NULL, path, sizeof(path) - 1);
       if (strlen(path) != 0) {
 	slide::PDF pdf(path, 640, 480);
 	for (auto slide : this->deck) {
