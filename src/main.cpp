@@ -77,9 +77,11 @@ private:
 	}
       }
     } else if (cmd == "set_preview_size") {
-      // TODO:
+      this->preview_width = json.at("w").get<int>();
+      this->preview_height = json.at("h").get<int>();
     } else if (cmd == "set_palette") {
-      // TODO:
+      this->fg = json.at("fg").get<int>();
+      this->bg = json.at("bg").get<int>();
     } else if (cmd == "set_text") {
       this->current_text = json.at("text").get<std::string>();
       this->deck = slide::parse(this->current_text);

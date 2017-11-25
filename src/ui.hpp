@@ -105,6 +105,21 @@ static const char *picodom_js = R"picodomjs(
 
 static const char *app_js = R"appjs(
 
+var PALETTE = [
+    {fg: 0xfffefefe, bg: 0xff333333},    // white on dark gray
+    {fg: 0xff333333, bg: 0xffeeeeee},    // dark gray on white
+    {fg: 0xffffffff, bg: 0xffe51c23},    // white on red
+    {fg: 0xffffffff, bg: 0xffff5722},    // white on deep orange
+    {fg: 0xff222222, bg: 0xffffeb3b},    // black on yellow
+    {fg: 0xff333333, bg: 0xffcddc39},    // black on lime
+    {fg: 0xff222222, bg: 0xff8bc34a},    // black on light green
+    {fg: 0xffffffff, bg: 0xff009688},    // white on teal
+    {fg: 0xff333333, bg: 0xff00bcd4},    // black on cyan
+    {fg: 0xffffffff, bg: 0xff3f51b5},    // white on indigo
+    {fg: 0xffffffff, bg: 0xff75507b},    // white on plum
+    {fg: 0xffffffff, bg: 0xffe91e63},    // white on pink
+];
+
 window.app = {
     cmd: function(c) { window.external.invoke_(JSON.stringify(c)); },
     setCursor: function(pos) { app.cmd({cmd: 'set_cursor', cursor: pos}); },
@@ -114,6 +129,7 @@ window.app = {
     createFile: function() { app.cmd({cmd: 'create_file'}); },
     openFile: function() { app.cmd({cmd: 'open_file'}); },
     exportPDF: function() { app.cmd({cmd: 'export_pdf'}); },
+    currentPalette: 0,
     state: {
         text: '',
         previewDataURI: '',
@@ -183,9 +199,17 @@ document.onkeydown = function(e) {
     } else if (e.keyCode === 80 && e.ctrlKey) {  // Ctrl+P
         e.preventDefault();
         app.exportPDF();
+    } else if (e.keyCode === 188 && e.ctrlKey) {  // Ctrl+,
+        app.currentPalette = (app.currentPalette - 1 + PALETTE.length) % PALETTE.length;
+        app.setPalette(PALETTE[app.currentPalette].fg, PALETTE[app.currentPalette].bg);
+    } else if (e.keyCode === 190 && e.ctrlKey) {  // Ctrl+.
+        app.currentPalette = (app.currentPalette + 1) % PALETTE.length;
+        app.setPalette(PALETTE[app.currentPalette].fg, PALETTE[app.currentPalette].bg);
     }
 };
 
+app.setPalette(PALETTE[app.currentPalette].fg, PALETTE[app.currentPalette].bg);
+app.setPreviewSize(200, 150);
 render();
 )appjs";
 
