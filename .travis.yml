@@ -8,6 +8,7 @@ matrix:
       env:
         - COMPILER=g++-7
         - CMAKE=cmake
+        - PACKAGE="slide-linux.*"
       addons:
         apt:
           sources:
@@ -23,6 +24,7 @@ matrix:
         - COMPILER=i686-w64-mingw32.static-g++
         - CMAKE=i686-w64-mingw32.static-cmake
         - SKIP_TESTS=true
+        - PACKAGE=slide-win32.zip
       addons:
         apt:
           sources:
@@ -37,6 +39,7 @@ matrix:
       osx_image: xcode9.1
       env:
         - CMAKE=cmake
+        - PACKAGE=slide-macos.dmg
       before_install:
         - brew install cairo
 
@@ -46,4 +49,14 @@ script:
   - cd build
   - ${CMAKE} ..
   - make
+  - make package
   - if [ -z "${SKIP_TESTS}" ] ; then ./test/slide_test ; fi
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_ACCESS_TOKEN
+  file_glob: true
+  file: $PACKAGE
+  skip_cleanup: true
+  on:
+    tags: true
