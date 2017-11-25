@@ -172,6 +172,20 @@ var node;
 window.render = function() {
     picodom.patch(node, (node = ui()), document.body);
 }
+
+document.onkeydown = function(e) {
+    if (e.keyCode === 78 && e.ctrlKey) {  // Ctrl+N
+        e.preventDefault();
+        app.createFile();
+    } else if (e.keyCode === 79 && e.ctrlKey) {  // Ctrl+O
+        e.preventDefault();
+        app.openFile();
+    } else if (e.keyCode === 80 && e.ctrlKey) {  // Ctrl+P
+        e.preventDefault();
+        app.exportPDF();
+    }
+};
+
 render();
 )appjs";
 
