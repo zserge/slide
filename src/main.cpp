@@ -79,9 +79,11 @@ private:
     } else if (cmd == "set_preview_size") {
       this->preview_width = json.at("w").get<int>();
       this->preview_height = json.at("h").get<int>();
+      this->renderCurrentSlide();
     } else if (cmd == "set_palette") {
       this->fg = json.at("fg").get<int>();
       this->bg = json.at("bg").get<int>();
+      this->renderCurrentSlide();
     } else if (cmd == "set_text") {
       this->current_text = json.at("text").get<std::string>();
       this->deck = slide::parse(this->current_text);
@@ -98,13 +100,17 @@ private:
 	  }
 	}
       }
-      if (this->current_slide != -1) {
-	slide::PNG png(this->preview_width, this->preview_height);
-	slide::render(png, this->deck[this->current_slide], this->fg, this->bg);
-	this->preview_data_uri = png.dataURI();
-      }
+      this->renderCurrentSlide();
     }
     this->render();
+  }
+
+  void renderCurrentSlide() {
+    if (this->current_slide != -1) {
+      slide::PNG png(this->preview_width, this->preview_height);
+      slide::render(png, this->deck[this->current_slide], this->fg, this->bg);
+      this->preview_data_uri = png.dataURI();
+    }
   }
 
   void render() {
@@ -117,7 +123,7 @@ private:
   }
 
   slide::Deck deck;
-  int current_slide;
+  int current_slide = -1;
   std::string current_file;
   std::string current_text;
   std::string preview_data_uri;
