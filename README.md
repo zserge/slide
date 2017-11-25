@@ -30,6 +30,10 @@ With simple markup language you can easily make modern-looking text slides. The 
 - Images may be scaled, e.g `@http://example.com/bg.png 30%`
 - Images may have certain gravity, e.g. `@http://example.com/logo.png top`
 
+## Download
+
+See Github [Releases](https://github.com/zserge/slide/releases/latest).
+
 ## Build instructions
 
 ```bash
