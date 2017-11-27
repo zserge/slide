@@ -2,12 +2,12 @@
 #define UI_HPP
 
 static inline std::string css_inject(const std::string &css) {
-    std::string esc;
-    const auto hex = "0123456789ABCDEF";
-    for (auto c : css) {
-        esc = esc + "\\x" + hex[((c >> 4) & 0xf)] + hex[c & 0xf];
-    }
-    std::string js = R"(
+  std::string esc;
+  const auto hex = "0123456789ABCDEF";
+  for (auto c : css) {
+    esc = esc + "\\x" + hex[((c >> 4) & 0xf)] + hex[c & 0xf];
+  }
+  std::string js = R"(
     (function(css) {
       var style = document.createElement('style');
       var head = document.head || document.getElementsByTagName('head')[0];
@@ -19,7 +19,7 @@ static inline std::string css_inject(const std::string &css) {
       }
       head.appendChild(style);
     })(")" + esc + R"("))";
-    return js;
+  return js;
 }
 
 static const char *html_data_uri =

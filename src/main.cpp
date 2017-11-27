@@ -17,7 +17,7 @@ public:
     this->webview.resizable = 1;
     this->webview.userdata = this;
     this->webview.external_invoke_cb = [](struct webview *w, const char *data) {
-      App *app = (App *)w->userdata;
+      App *app = static_cast<App *>(w->userdata);
       app->handleCommand(data);
     };
   }
@@ -25,56 +25,54 @@ public:
   void run() {
     webview_init(&this->webview);
     webview_dispatch(&this->webview,
-		     [](struct webview *w, void *arg) {
-		       App *app = (App *)w->userdata;
-		       webview_eval(w, css_inject(styles_css).c_str());
-		       webview_eval(w, picodom_js);
-		       webview_eval(w, app_js);
-		     },
-		     NULL);
-    while (webview_loop(&this->webview, 1) == 0)
-      ;
+                     [](struct webview *w, void *arg) {
+                       App *app = static_cast<App *>(w->userdata);
+                       webview_eval(w, css_inject(styles_css).c_str());
+                       webview_eval(w, picodom_js);
+                       webview_eval(w, app_js);
+                     },
+                     nullptr);
+    while (webview_loop(&this->webview, 1) == 0) {
+    }
     webview_exit(&this->webview);
   }
 
 private:
   void handleCommand(const std::string &data) {
+    char path[PATH_MAX];
     auto json = nlohmann::json::parse(data);
     auto cmd = json.at("cmd").get<std::string>();
     if (cmd == "create_file") {
-      char path[PATH_MAX];
       webview_dialog(&this->webview, WEBVIEW_DIALOG_TYPE_SAVE, 0,
-		     "New presentation...", NULL, path, sizeof(path) - 1);
+                     "New presentation...", nullptr, path, sizeof(path) - 1);
       if (strlen(path) != 0) {
-	this->current_file = path;
-	webview_set_title(&this->webview,
-			  ("Slide - " + this->current_file).c_str());
+        this->current_file = path;
+        webview_set_title(&this->webview,
+                          ("Slide - " + this->current_file).c_str());
       }
     } else if (cmd == "open_file") {
-      char path[PATH_MAX];
       webview_dialog(&this->webview, WEBVIEW_DIALOG_TYPE_OPEN, 0,
-		     "Open presentation...", NULL, path, sizeof(path) - 1);
+                     "Open presentation...", nullptr, path, sizeof(path) - 1);
       if (strlen(path) != 0) {
-	this->current_file = path;
-	webview_set_title(&this->webview,
-			  ("Slide - " + this->current_file).c_str());
-	std::ifstream ifs(this->current_file);
-	std::string text((std::istreambuf_iterator<char>(ifs)),
-			 (std::istreambuf_iterator<char>()));
-	this->current_text = text;
-	this->deck = slide::parse(this->current_text);
+        this->current_file = path;
+        webview_set_title(&this->webview,
+                          ("Slide - " + this->current_file).c_str());
+        std::ifstream ifs(this->current_file);
+        std::string text((std::istreambuf_iterator<char>(ifs)),
+                         (std::istreambuf_iterator<char>()));
+        this->current_text = text;
+        this->deck = slide::parse(this->current_text);
       }
     } else if (cmd == "export_pdf") {
-      char path[PATH_MAX];
       webview_dialog(&this->webview, WEBVIEW_DIALOG_TYPE_SAVE, 0,
-		     "Export PDF...", NULL, path, sizeof(path) - 1);
+                     "Export PDF...", nullptr, path, sizeof(path) - 1);
       if (strlen(path) != 0) {
-	slide::PDF pdf(path, 640, 480);
-	for (auto slide : this->deck) {
-	  pdf.begin_page();
-	  slide::render(pdf, slide, this->fg, this->bg);
-	  pdf.end_page();
-	}
+        slide::PDF pdf(path, 640, 480);
+        for (auto slide : this->deck) {
+          pdf.begin_page();
+          slide::render(pdf, slide, this->fg, this->bg);
+          pdf.end_page();
+        }
       }
     } else if (cmd == "set_preview_size") {
       this->preview_width = json.at("w").get<int>();
@@ -93,12 +91,12 @@ private:
       auto cursor = json.at("cursor").get<int>();
       this->current_slide = -1;
       for (int i = 0; this->current_slide == -1 && i < this->deck.size(); i++) {
-	for (auto token : this->deck[i]) {
-	  if (token.pos >= cursor) {
-	    this->current_slide = i;
-	    break;
-	  }
-	}
+        for (auto token : this->deck[i]) {
+          if (token.pos >= cursor) {
+            this->current_slide = i;
+            break;
+          }
+        }
       }
       this->renderCurrentSlide();
     }
@@ -118,8 +116,8 @@ private:
     json["text"] = this->current_text;
     json["previewDataURI"] = this->preview_data_uri;
     webview_eval(
-	&this->webview,
-	("window.app.state=" + json.dump() + "; window.render()").c_str());
+        &this->webview,
+        ("window.app.state=" + json.dump() + "; window.render()").c_str());
   }
 
   slide::Deck deck;
