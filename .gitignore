@@ -33,3 +33,5 @@
 
 # CMake
 /build/
+
+*.DS_Store

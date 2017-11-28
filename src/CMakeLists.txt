@@ -1,9 +1,19 @@
-find_package(PkgConfig)
-pkg_check_modules(Cairo cairo)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "../cmake")
+message(STATUS Looking\ for\ Cairo\ using\ FindCairo.cmake\ in:)
+message(STATUS \t${CMAKE_MODULE_PATH})
+
+find_package(cairo)
+
+if(CAIRO_FOUND)
+	message(STATUS Cairo\ Included\ dirs:)
+	message(STATUS \t${CAIRO_INCLUDE_DIRS})
+	message(STATUS Cairo\ Libraries:)
+	message(STATUS \t${CAIRO_LIBRARIES})
+endif()
 
 add_library(slide-core INTERFACE)
-target_include_directories(slide-core INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${Cairo_INCLUDE_DIRS})
-target_link_libraries(slide-core INTERFACE ${Cairo_LIBRARIES})
+target_include_directories(slide-core INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
+target_link_libraries(slide-core INTERFACE ${CAIRO_LIBRARIES})
 
 add_library(webview INTERFACE)
 target_include_directories(webview INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
