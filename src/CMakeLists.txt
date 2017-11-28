@@ -11,19 +11,18 @@ if(CAIRO_FOUND)
 	message(STATUS \t${CAIRO_LIBRARIES})
 endif()
 
-add_library(slide_lib slide.cpp)
-target_link_libraries(slide_lib  colour)
-
+add_library(slide_lib slide.cpp dimenions.cpp colour_t.cpp)
+target_link_libraries(slide_lib)
 
 add_library(slide-core INTERFACE)
 target_include_directories(slide-core INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
 target_link_libraries(slide-core INTERFACE ${CAIRO_LIBRARIES} slide_lib)
 
-add_library(app App.cpp)
+add_library(app App.cpp dimenions.cpp colour_t.cpp)
 target_include_directories(app INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
-target_link_libraries(app PRIVATE webview colour slide_lib)
+target_link_libraries(app PRIVATE webview slide_lib)
 
-add_library(colour colour_t.cpp)
+#add_library(colour colour_t.cpp)
 
 add_library(webview INTERFACE)
 target_include_directories(webview INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -53,7 +52,7 @@ add_executable(slide WIN32 main.cpp ${CMAKE_SOURCE_DIR}/res/main.rc)
 if(APPLE)
 	set_source_files_properties(main.cpp PROPERTIES COMPILE_FLAGS "-x objective-c++")
 endif()
-target_link_libraries(slide PRIVATE slide-core webview json app colour slide_lib)
+target_link_libraries(slide PRIVATE slide-core webview json app slide_lib)
 
 if(APPLE)
 	install(TARGETS slide RUNTIME DESTINATION "slide.app/Contents/MacOS")

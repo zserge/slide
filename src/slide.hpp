@@ -6,6 +6,7 @@
 #include <cairo/cairo-pdf.h>
 #include <cairo/cairo.h>
 #include "colour_t.h"
+#include "dimenions.h"
 
 namespace slide {
 
@@ -37,34 +38,38 @@ namespace slide {
 
 	class Page_b {
 	public:
-		Page_b(const int w, const int h, cairo_surface_t * const psurf, cairo_t * const pcr )
-				: w(w), h(h), surface(psurf), cr(pcr) {/* intentionally blank */}
-		Page_b(const int w, const int h);
-		Page_b(void) : w(0), h(0), surface(0), cr(0) {/* intentionally blank */}
+		Page_b(const int w, const int h, cairo_surface_t * const psurf, cairo_t * const pcr, const std::string& name )
+				: _size(w,h), _surface(psurf), _cr(pcr), _name(name)
+		{/* intentionally blank */}
+
+		Page_b(const int w, const int h, const std::string& name);
+
+		Page_b(void) : _size(0, 0), _surface(0), _cr(0), _name("No Name Set")
+		{/* intentionally blank */}
+
 		virtual ~Page_b(void);
-		virtual int 	width(void) 																					const = 0;
-		virtual int 	height(void) 																					const = 0;
+		virtual const dimensions& size(void){ return _size; }
 		virtual int 	text_height(Style style, float scale) 															= 0;
 		virtual int 	text_width(const std::string &text, Style style, float scale) 									= 0;
 		virtual void 	bg(const colour_t& color) 																		= 0;
 		virtual void 	text(const std::string &text, const colour_t& color, int x, int y, Style style, float scale) 	= 0;
 	protected:
-		const int 			w;
-		const int 			h;
-		cairo_surface_t 	*surface;
-		cairo_t 			*cr;
+		const dimensions	_size;
+		cairo_surface_t 	*_surface;
+		cairo_t 			*_cr;
+		const std::string 	_name;
 	};
 
 	class Document_b : public Page_b {
 	public:
-		Document_b(const int w, const int h, cairo_surface_t * const psurf, cairo_t * const pcr ) : Page_b(w, h, psurf, pcr)
+		Document_b(const int w, const int h, cairo_surface_t * const psurf, cairo_t * const pcr, const std::string& name) : Page_b(w, h, psurf, pcr, name)
 		{/* intentionally blank */}
 
-		Document_b(const int w, const int h): Page_b(w, h)
+		Document_b(const int w, const int h, const std::string& name): Page_b(w, h, name)
 		{/* intentionally blank */}
 
-		Document_b(void) : Page_b()
-		{ /* Intentionally Blank */ }
+		//Document_b(void) : Page_b()
+		//{ /* Intentionally Blank */ }
 
 		virtual void begin_page(void) 																					= 0;
 		virtual void end_page(void) 																					= 0;
@@ -83,9 +88,8 @@ namespace slide {
 	class PNG : public Page_b {
 	public:
 		PNG(const int w, const int h);
+		PNG(const int w, const int h, const std::string& name);
 		~PNG(void);
-		int 	width(void) 																							const;
-		int 	height(void) 																							const;
 		int 	text_height(Style style, float scale);
 		int 	text_width(const std::string &text, Style style, float scale);
 		void 	bg(const colour_t& color);
@@ -93,8 +97,6 @@ namespace slide {
 		void 	save(const std::string filename);
 		std::string dataURI(void);
 
-	private:
-		const std::string 	name;
 	};
 
 	class PDF : public Document_b {
@@ -105,14 +107,13 @@ namespace slide {
 		void begin_page(void);
 		void end_page(void);
 
-		int 	width(void) 																							const;
-		int 	height(void) 																							const;
 		int 	text_height(Style style, float scale);
 		int 	text_width(const std::string &text, Style style, float scale);
 		void 	bg(const colour_t& color);
 		void 	text(const std::string &text, const colour_t& color, int x, int y, Style style, float scale);
 	};
 
+	// Static functions only
 	Deck 				parse(const std::string &text);
 	std::pair<int, int> render_scale(Page_b &p, Slide &slide, const colour_t& color, int xoff, int yoff, float scale);
 	void 				render(Page_b &page, Slide &slide, const colour_t& fg, const colour_t& bg);
