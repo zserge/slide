@@ -148,7 +148,7 @@ TEST_CASE("Render", "[slide::render]") {
 # Hello
 foo *bar* baz
 )");
-  class MockPage : public slide::Page {
+  class MockPage : public slide::Page_b {
   public:
     int width() const { return 100; }
     int height() const { return 50; }

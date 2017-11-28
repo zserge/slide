@@ -34,4 +34,8 @@
 # CMake
 /build/
 
+# Mac hidden files
 *.DS_Store
+
+# CLion dirs
+*.idea/
