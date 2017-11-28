@@ -24,4 +24,7 @@ else()
 	set(CPACK_SET_DESTDIR ON)
 	set(CPACK_PACKAGE_FILE_NAME "slide-linux")
 endif()
+
+message(STATUS Output\ is\ here:)
+message(STATUS \t${RUNTIME_OUTPUT_DIRECTORY})
 include(CPack)

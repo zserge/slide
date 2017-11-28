@@ -85,6 +85,8 @@ void App::render(void) {
 
 
 void create_file_cmd::execute(App& app, nlohmann::json & json){
+	std::cerr<< "Creating File" << std::endl;
+
 	char path[PATH_MAX];
 	webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0, "New presentation...", nullptr, path, PATH_MAX - 1);
 	if (std::string(path).length() != 0) {
@@ -94,6 +96,8 @@ void create_file_cmd::execute(App& app, nlohmann::json & json){
 }
 
 void open_file_cmd::execute(App &app, nlohmann::json &json ){
+	std::cerr<< "Opening File" << std::endl;
+
 	char path[PATH_MAX];
 	webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_OPEN, 0, "Open presentation...", nullptr, path, sizeof(path) - 1);
 	if (std::string(path).length() != 0) {
@@ -109,6 +113,7 @@ void open_file_cmd::execute(App &app, nlohmann::json &json ){
 }
 
 void export_pdf_cmd::execute( App &app, nlohmann::json &json ){
+	std::cerr<< "Exporting to PDF" << std::endl;
 	char path[PATH_MAX];
 	webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0, "Export PDF...", nullptr, path, sizeof(path) - 1);
 	if (strlen(path) != 0) {
@@ -122,19 +127,21 @@ void export_pdf_cmd::execute( App &app, nlohmann::json &json ){
 }
 
 void set_preview_size_cmd::execute( App &app, nlohmann::json &json ){
-	app.preview_size().width() = json.at("_w").get<int>();
-	app.preview_size().height() = json.at("_h").get<int>();
+	std::cerr<< "Setting Preview Size" << std::endl;
+	app.preview_size().width() = json.at("w").get<int>();
+	app.preview_size().height() = json.at("h").get<int>();
 	app.renderCurrentSlide();
 }
 
 void set_palette_cmd::execute( App &app, nlohmann::json &json ){
 	std::cerr << "Setting palette" << std::endl;
-	app.foreground() = json.at("_fg").get<int>();
-	app.background() = json.at("_bg").get<int>();
+	app.foreground() = json.at("fg").get<int>();
+	app.background() = json.at("bg").get<int>();
 	app.renderCurrentSlide();
 }
 
 void set_text_cmd::execute( App &app, nlohmann::json &json ){
+	std::cerr<< "Setting Text" << std::endl;
 	app.current_text() = json.at("text").get<std::string>();
 	app.deck() = slide::parse(app.current_text());
 	std::ofstream file(app.current_file());
@@ -143,6 +150,7 @@ void set_text_cmd::execute( App &app, nlohmann::json &json ){
 
 
 void set_cursor_cmd::execute( App &app, nlohmann::json &json ){
+	std::cerr<< "Setting Cursor" << std::endl;
 	auto cursor = json.at("cursor").get<int>();
 	app.current_slide() = -1;
 	for (int i = 0; app.current_slide() == -1 && i < app.deck().size(); i++) {
