@@ -50,7 +50,7 @@ target_include_directories(json INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_IN
 
 add_executable(slide WIN32 main.cpp ${CMAKE_SOURCE_DIR}/res/main.rc)
 if(APPLE)
-	#set_source_files_properties(main.cpp PROPERTIES COMPILE_FLAGS "-x objective-c++")
+	set_source_files_properties(main.cpp PROPERTIES COMPILE_FLAGS "-x objective-c++")
 endif()
 target_link_libraries(slide PRIVATE slide-core webview json app colour slide_lib)
 
