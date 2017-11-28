@@ -78,11 +78,11 @@ void App::render(void) {
 	auto json = nlohmann::json({});
 	json["text"] = _current_text;
 	json["previewDataURI"] = _preview_data_uri;
-	webview_eval(
-			&_wview,
-			("window.app.state=" + json.dump() + "; window.render()").c_str());
+	webview_eval(&_wview, ("window.app.state=" + json.dump() + "; window.render()").c_str());
 }
 
+//----------- Below here is the command implementations for each key in the command map.
+// If adding a new command simply add it here.
 
 void create_file_cmd::execute(App& app, nlohmann::json & json){
 	std::cerr<< "Creating File" << std::endl;
