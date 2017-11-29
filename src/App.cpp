@@ -8,7 +8,7 @@ App::App(void) {
 	_wview.resizable 			= 1;
 	_wview.userdata 			= this;
 
-	// The callback for when a webvie event is invoked is the handleCommand method
+	// The callback for when a webview event is invoked is the handleCommand method
 	_wview.external_invoke_cb 	= [](struct webview *w, const char *data) {
 		App *app = static_cast<App *>(w->userdata);
 		app->handleCommand(data);
@@ -36,8 +36,8 @@ App::App(void) {
 }
 
 void App::run(void) {
-	webview_init(&this->_wview);
-	webview_dispatch(&this->_wview,
+	webview_init(&_wview);
+	webview_dispatch(&_wview,
 					 [](struct webview *w, void *arg) {
 						 App *app = static_cast<App *>(w->userdata);
 						 webview_eval(w, css_inject(styles_css).c_str());
@@ -45,30 +45,30 @@ void App::run(void) {
 						 webview_eval(w, app_js);
 					 },
 					 nullptr);
-	while (webview_loop(&this->_wview, 1) == 0) { /* Intentionally Blank */ }
-	webview_exit(&this->_wview);
+	while (webview_loop(&_wview, 1) == 0) { /* Intentionally Blank */ }
+	webview_exit(&_wview);
 }
 
 void App::handleCommand(const std::string &data) {
 
 	auto json 	= nlohmann::json::parse(data);
 	auto cmd 	= json.at("cmd").get<std::string>();
-	std::cerr << cmd << std::endl;
 
 	// If the command isn't found, but we try to access it the command_map will
 	// add the key with a null value, so before accessing confirm it's in the map
-	if(_cmds_map.find(cmd) == _cmds_map.end()){ return; }
+	if(_cmds_map.find(cmd) == _cmds_map.end()){
+		std::cerr << cmd << " is not a valid command" << std::endl;
+		return;
+	}
 
-	std::cerr << "Command found " << std::endl;
 	_cmds_map[cmd]->execute(*this, json);
-	std::cerr << "Command done" << std::endl;
 
 	render();
 }
 
 void App::renderCurrentSlide(void) {
 	if (_current_slide != -1) {
-		slide::PNG png(_preview_size.width(), _preview_size.height());
+		PNG png(_preview_size.width(), _preview_size.height());
 		slide::render(png, _deck[_current_slide], _fg, _bg);
 		_preview_data_uri = png.dataURI();
 	}
@@ -113,11 +113,12 @@ void open_file_cmd::execute(App &app, nlohmann::json &json ){
 }
 
 void export_pdf_cmd::execute( App &app, nlohmann::json &json ){
+#warning PM: This doesnt actually write to a PDF
 	std::cerr<< "Exporting to PDF" << std::endl;
 	char path[PATH_MAX];
 	webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0, "Export PDF...", nullptr, path, sizeof(path) - 1);
 	if (strlen(path) != 0) {
-		slide::PDF pdf(path, 640, 480);
+		PDF pdf(path, 640, 480);
 		for (auto slide : app.deck()) {
 			pdf.begin_page();
 			slide::render(pdf, slide, app.foreground(), app.background());

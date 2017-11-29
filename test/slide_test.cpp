@@ -2,7 +2,6 @@
 #include "catch.hpp"
 
 #include <slide.hpp>
-#include <colour_t.h>
 
 TEST_CASE("Empty _deck", "[slide::parse]") {
   slide::Deck deck;
@@ -149,9 +148,9 @@ TEST_CASE("Render", "[slide::render]") {
 # Hello
 foo *bar* baz
 )");
-  class MockPage : public slide::Page_b {
+  class MockPage : public Page_b {
   public:
-      MockPage(void) : slide::Page_b() { /* Intentionally Blank */}
+      MockPage(void) : Page_b() { /* Intentionally Blank */}
       int width(void) const { return 100; }
       int height(void) const { return 50; }
       int text_height(slide::Style style, float scale) {

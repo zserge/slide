@@ -1,202 +1,10 @@
+#include <iostream>
 #include "slide.hpp"
 
-const std::string slide::base64::base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-std::string slide::base64::encode(unsigned char const *bytes_to_encode, unsigned int in_len, bool url) {
-	std::string ret;
-	int i = 0;
-	int j = 0;
-	unsigned char char_array_3[3];
-	unsigned char char_array_4[4];
-	while (in_len--) {
-		char_array_3[i++] = *(bytes_to_encode++);
-		if (i == 3) {
-			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-			char_array_4[1] =
-					((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-			char_array_4[2] =
-					((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-			char_array_4[3] = char_array_3[2] & 0x3f;
-			for (i = 0; (i < 4); i++) {
-				char c = base64_chars[char_array_4[i]];
-				if (url && c == '+') {
-					ret += "%2B";
-				} else if (url && c == '/') {
-					ret += "%2F";
-				} else {
-					ret += c;
-				}
-			}
-			i = 0;
-		}
-	}
-	if (i) {
-		for (j = i; j < 3; j++) {
-			char_array_3[j] = '\0';
-		}
-		char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-		char_array_4[1] =
-				((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-		char_array_4[2] =
-				((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-		char_array_4[3] = char_array_3[2] & 0x3f;
-		for (j = 0; (j < i + 1); j++) {
-			char c = base64_chars[char_array_4[i]];
-			if (url && c == '+') {
-				ret += "%2B";
-			} else if (url && c == '/') {
-				ret += "%2F";
-			} else {
-				ret += c;
-			}
-		}
-		while ((i++ < 3)) {
-			if (url) {
-				ret += "%3D";
-			} else {
-				ret += "=";
-			}
-		}
-	}
-	return ret;
-}
-
-slide::Page_b::Page_b(const int w, const int h, const std::string& name)
-	: _size(w, h), _name(name) {
-	_surface = 	cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
-	_cr = 		cairo_create(_surface);
-}
-slide::Page_b::~Page_b(void){
-	if(_surface)	{ cairo_surface_destroy(_surface); }
-	if(_cr) 		{ cairo_destroy(_cr); }
-}
-
-slide::PNG::PNG(const int w, const int h) : Page_b(w, h, "")
-{ /* Intentionally Blank */}
-
-slide::PNG::PNG(const int w, const int h, const std::string& name) : Page_b(w, h, name)
-{ /* Intentionally Blank */}
-
-slide::PNG::~PNG(void) { /* Intentionally Blank */ }
-
-int slide::PNG::text_height(Style style, float scale) {
-	return cairo::text_height(this->_cr, style, scale);
-}
-
-int slide::PNG::text_width(const std::string &text, Style style, float scale) {
-	return cairo::text_width(this->_cr, text, style, scale);
-}
-
-void slide::PNG::bg(const colour_t& color) {
-	cairo::bg(this->_cr, _size.width(), _size.width(), color);
-}
-
-void slide::PNG::text(const std::string &text, const colour_t& color, int x, int y, Style style, float scale) {
-	cairo::text(_cr, text, color, x, y, style, scale);
-}
-
-void slide::PNG::save(const std::string filename) {
-	cairo_surface_write_to_png(_surface, filename.c_str());
-}
-
-std::string slide::PNG::dataURI(void) {
-	std::vector<unsigned char> raw;
-	cairo_surface_write_to_png_stream(
-			_surface,
-			[](void *closure, const unsigned char *data, unsigned int length) {
-				std::vector<unsigned char> *raw =
-						(std::vector<unsigned char> *)(closure);
-				for (unsigned int i = 0; i < length; i++) {
-					raw->push_back(data[i]);
-				}
-				return CAIRO_STATUS_SUCCESS;
-			},
-			&raw);
-	return "data:image/png;base64," + base64::encode(raw.data(), raw.size(), true);
-}
 
 
-
-slide::PDF::PDF(const std::string name, const int w, const int h) : Document_b(w, h, name)
-{ /* Intentionally Blank */ }
-
-slide::PDF::~PDF(void) {
-	cairo_surface_destroy(_surface);
-	cairo_destroy(_cr);
-}
-
-void slide::PDF::begin_page(void) {}
-void slide::PDF::end_page(void) { cairo_show_page(_cr); }
-
-int slide::PDF::text_height(Style style, float scale) {
-	return cairo::text_height(this->_cr, style, scale);
-}
-int slide::PDF::text_width(const std::string &text, Style style, float scale) {
-	return cairo::text_width(this->_cr, text, style, scale);
-}
-void slide::PDF::bg(const colour_t& color) { cairo::bg(this->_cr, _size.width(), _size.height(), color); }
-void slide::PDF::text(const std::string &text, const colour_t& color, int x, int y, Style style,
-					  float scale) {
-	cairo::text(_cr, text, color, x, y, style, scale);
-}
-
-
-void slide::cairo::set_font(cairo_t *cr, Style style, float scale) {
-	switch (style) {
-		case Normal:
-			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL,
-								   CAIRO_FONT_WEIGHT_NORMAL);
-			break;
-		case Strong:
-			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL,
-								   CAIRO_FONT_WEIGHT_BOLD);
-			break;
-		case Header:
-			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL,
-								   CAIRO_FONT_WEIGHT_BOLD);
-			scale = scale * 1.6f;
-			break;
-		case Monospace:
-			cairo_select_font_face(cr, "monospace", CAIRO_FONT_SLANT_NORMAL,
-								   CAIRO_FONT_WEIGHT_NORMAL);
-			break;
-	}
-	cairo_set_font_size(cr, 16 * scale);
-}
-void slide::cairo::set_source_color(cairo_t *cr, const colour_t& color) {
-	cairo_set_source_rgba(cr, color.red(), color.green(), color.blue(), color.alpha());
-}
-int slide::cairo::text_height(cairo_t *cr, Style style, float scale) {
-	cairo_font_extents_t fe;
-	set_font(cr, style, scale);
-	cairo_font_extents(cr, &fe);
-	return (int)(fe.height);
-}
-int slide::cairo::text_width(cairo_t *cr, const std::string &text, Style style,
-							 float scale) {
-	cairo_text_extents_t te;
-	set_font(cr, style, scale);
-	cairo_text_extents(cr, text.c_str(), &te);
-	return (int)(te.x_advance);
-}
-
-void slide::cairo::bg(cairo_t *cr, int w, int h, const colour_t& color) {
-	set_source_color(cr, color);
-	cairo_rectangle(cr, 0, 0, w, h);
-	cairo_fill(cr);
-}
-void slide::cairo::text(cairo_t *cr, const std::string &text, const colour_t& color, int x,
-						int y, Style style, float scale) {
-	cairo_font_extents_t fe;
-	set_source_color(cr, color);
-	set_font(cr, style, scale);
-	cairo_font_extents(cr, &fe);
-	cairo_move_to(cr, x, y + fe.ascent);
-	cairo_show_text(cr, text.c_str());
-}
-
-std::pair<int, int> slide::render_scale(Page_b &p, Slide &slide, const colour_t& color,
-										int xoff, int yoff, float scale) {
+std::pair<int, int> slide::render_scale(Page_b &p, Slide &slide, const colour_t& color, int xoff, int yoff, float scale) {
+	std::cerr << "render_scale" << std::endl;
 	int w = 0;
 	int h = 0;
 	int line_height = 0;
@@ -228,7 +36,7 @@ void slide::render(Page_b &page, Slide &slide, const colour_t& fg, const colour_
 	if (slide.size() == 0) {
 		return;
 	}
-
+	std::cerr << "render" << std::endl;
 	float scale = 1.f;
 	auto size = render_scale(page, slide, 0, 0, 0, scale);
 	scale = std::min(page.size().width() * 0.8 / size.first,
@@ -238,6 +46,8 @@ void slide::render(Page_b &page, Slide &slide, const colour_t& fg, const colour_
 	page.bg(bg);
 	render_scale(page, slide, fg, (page.size().width() - size.first) / 2,
 				 (page.size().height() - size.second) / 2, scale);
+
+	std::cerr << "render complete" << std::endl;
 }
 
 slide::Deck slide::parse(const std::string &text) {
