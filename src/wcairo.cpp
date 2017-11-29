@@ -87,9 +87,12 @@ cairo_t* wcairo::create (cairo_surface_t *target){
 }
 
 void wcairo::write_to_png (cairo_surface_t *surface, const char *filename){
-	cairo_surface_write_to_png(surface, filename);
+	auto rc = cairo_surface_write_to_png(surface, filename);
+	std::cerr << "cairo_surface_write_to_png returned " << rc << std::endl;
 }
 
 void wcairo::write_to_png_stream (cairo_surface_t *surface, cairo_write_func_t write_func, void *closure){
-	cairo_surface_write_to_png_stream(surface,write_func,closure);
+	auto rc = cairo_surface_write_to_png_stream(surface,write_func,closure);
+	std::cerr << "cairo_surface_write_to_png_stream returned " << rc << std::endl;
+
 }
