@@ -3,7 +3,7 @@
 
 #include <slide.hpp>
 
-TEST_CASE("Empty deck", "[slide::parse]") {
+TEST_CASE("Empty _deck", "[slide::parse]") {
   slide::Deck deck;
 
   deck = slide::parse("");
@@ -55,7 +55,7 @@ Bar
 
 #Header 2
   
-  #include <stdio.h>
+  #include <stdio._h>
   
   int main() {
     int n; /* comment */
@@ -148,40 +148,41 @@ TEST_CASE("Render", "[slide::render]") {
 # Hello
 foo *bar* baz
 )");
-  class MockPage : public slide::Page {
+  class MockPage : public Page_b {
   public:
-    int width() const { return 100; }
-    int height() const { return 50; }
-    int text_height(slide::Style style, float scale) {
-      this->called["text_height"]++;
-      return scale * 10;
-    }
-    int text_width(const std::string &s, slide::Style style, float scale) {
-      this->called["text_width"]++;
-      return s.size() * scale * 5;
-    }
-    void bg(slide::Color c) {
-      this->called["bg"]++;
-      REQUIRE(c == 0xff00ff00);
-    }
-    void text(const std::string &s, slide::Color c, int x, int y, slide::Style,
-              float scale) {
-      this->called["text::" + s]++;
-      REQUIRE((s == "Hello" || s == "foo " || s == "bar" || s == " baz"));
-      REQUIRE((scale == 1.f || (scale > 1.44f && scale < 1.46f)));
-    }
-    void check() {
-      REQUIRE(this->called["bg"] > 0);
-      REQUIRE(this->called["text_width"] > 0);
-      REQUIRE(this->called["text_height"] > 0);
-      REQUIRE(this->called["text::Hello"] > 0);
-      REQUIRE(this->called["text::foo "] > 0);
-      REQUIRE(this->called["text::bar"] > 0);
-      REQUIRE(this->called["text:: baz"] > 0);
-    }
+      MockPage(void) : Page_b() { /* Intentionally Blank */}
+      int width(void) const { return 100; }
+      int height(void) const { return 50; }
+      int text_height(slide::Style style, float scale) {
+        this->called["text_height"]++;
+        return scale * 10;
+      }
+      int text_width(const std::string &s, slide::Style style, float scale) {
+        this->called["text_width"]++;
+        return s.size() * scale * 5;
+      }
+      void bg(const colour_t& c) {
+        this->called["_bg"]++;
+        REQUIRE(c == 0xff00ff00);
+      }
+      void text(const std::string &s, const colour_t& c, int x, int y, slide::Style,
+                float scale) {
+        this->called["text::" + s]++;
+        REQUIRE((s == "Hello" || s == "foo " || s == "bar" || s == " baz"));
+        REQUIRE((scale == 1.f || (scale > 1.44f && scale < 1.46f)));
+      }
+      void check() {
+        REQUIRE(this->called["_bg"] > 0);
+        REQUIRE(this->called["text_width"] > 0);
+        REQUIRE(this->called["text_height"] > 0);
+        REQUIRE(this->called["text::Hello"] > 0);
+        REQUIRE(this->called["text::foo "] > 0);
+        REQUIRE(this->called["text::bar"] > 0);
+        REQUIRE(this->called["text:: baz"] > 0);
+      }
 
   private:
-    std::map<std::string, int> called;
+      std::map<std::string, int> called;
   };
 
   MockPage mockPage;
