@@ -2,23 +2,19 @@
 #ifndef SLIDE_DIMENIONS_H
 #define SLIDE_DIMENIONS_H
 
-
-class dimensions{
+class dimensions {
 public:
-	dimensions(const int w, const int h)
-			:_w(w), _h(h){}
+  dimensions(const int w, const int h) : _w(w), _h(h) {}
 
-	int &width(void){ return _w; }
-	int &height(void){return _h;}
+  int &width(void) { return _w; }
+  int &height(void) { return _h; }
 
-	int width(void) const { return _w; }
-	int height(void) const { return _h; }
+  int width(void) const { return _w; }
+  int height(void) const { return _h; }
 
 private:
-	int _w;
-	int _h;
+  int _w;
+  int _h;
 };
 
-
-
-#endif //SLIDE_DIMENIONS_H
+#endif // SLIDE_DIMENIONS_H
