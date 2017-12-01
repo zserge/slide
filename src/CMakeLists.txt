@@ -2,7 +2,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "../cmake")
 message(STATUS Looking\ for\ Cairo\ using\ FindCairo.cmake\ in:)
 message(STATUS \t${CMAKE_MODULE_PATH})
 
-find_package(cairo REQUIRED)
+find_package(Cairo REQUIRED)
 
 if(CAIRO_FOUND)
 	message(STATUS Cairo\ Included\ dirs:)
