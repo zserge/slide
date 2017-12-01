@@ -1,5 +1,5 @@
 #include "documents.h"
-#include "encoding.h"
+#include "base64.h"
 #include <iostream>
 #include <vector>
 
@@ -7,14 +7,14 @@ namespace slide {
 Page::Page(const int w, const int h, const std::string &name)
     : size_(w, h), name_(name) {
   std::cerr << "Page_b::ctor creating _surface and _cr" << std::endl;
-  surface_ = WCairo::CreateSurface(w, h);
-  cr_ = WCairo::Create(surface_);
+  surface_ = CairoWrapper::CreateSurface(w, h);
+  cr_ = CairoWrapper::Create(surface_);
 }
 
 Page::~Page(void) {
   std::cerr << "Page_b::dtor destroying _surface and _cr" << std::endl;
-  WCairo::DestroySurface(surface_);
-  WCairo::Destroy(cr_);
+  CairoWrapper::DestroySurface(surface_);
+  CairoWrapper::Destroy(cr_);
 }
 
 Document::Document(const int w, const int h, cairo_surface_t *const psurf,
@@ -49,29 +49,29 @@ PNG::~PNG(void) { /* Intentionally Blank */
 }
 
 int PNG::TextHeight(slide::Style style, float scale) {
-  return WCairo::TextHeight(cr_, style, scale);
+  return CairoWrapper::TextHeight(cr_, style, scale);
 }
 
 int PNG::TextWidth(const std::string &text, slide::Style style, float scale) {
-  return WCairo::TextWidth(cr_, text, style, scale);
+  return CairoWrapper::TextWidth(cr_, text, style, scale);
 }
 
 void PNG::Background(const Color &color) {
-  WCairo::Background(cr_, size_.width(), size_.width(), color);
+  CairoWrapper::Background(cr_, size_.Width(), size_.Width(), color);
 }
 
 void PNG::Text(const std::string &text, const Color &color, int x, int y,
                slide::Style style, float scale) {
-  WCairo::Text(cr_, text, color, x, y, style, scale);
+  CairoWrapper::Text(cr_, text, color, x, y, style, scale);
 }
 
 void PNG::Save(const std::string filename) {
-  WCairo::WriteToPng(surface_, filename.c_str());
+  CairoWrapper::WriteToPng(surface_, filename.c_str());
 }
 
 std::string PNG::DataUri(void) {
   std::vector<unsigned char> raw;
-  WCairo::WriteToPngStream(
+  CairoWrapper::WriteToPngStream(
       surface_,
       [](void *closure, const unsigned char *data, unsigned int length) {
         std::vector<unsigned char> *raw =
@@ -98,22 +98,22 @@ void PDF::BeginPage(void) {
   // intentionally blank
 }
 
-void PDF::EndPage(void) { WCairo::ShowPage(cr_); }
+void PDF::EndPage(void) { CairoWrapper::ShowPage(cr_); }
 
 int PDF::TextHeight(slide::Style style, float scale) {
-  return WCairo::TextHeight(cr_, style, scale);
+  return CairoWrapper::TextHeight(cr_, style, scale);
 }
 
 int PDF::TextWidth(const std::string &text, slide::Style style, float scale) {
-  return WCairo::TextWidth(cr_, text, style, scale);
+  return CairoWrapper::TextWidth(cr_, text, style, scale);
 }
 
 void PDF::Background(const Color &color) {
-  WCairo::Background(cr_, size_.width(), size_.height(), color);
+  CairoWrapper::Background(cr_, size_.Width(), size_.Height(), color);
 }
 
 void PDF::Text(const std::string &text, const Color &color, int x, int y,
                slide::Style style, float scale) {
-  WCairo::Text(cr_, text, color, x, y, style, scale);
+  CairoWrapper::Text(cr_, text, color, x, y, style, scale);
 }
 } // namespace slide

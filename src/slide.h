@@ -5,7 +5,7 @@
 #include "dimenions.h"
 #include "documents.h"
 #include "styles.h"
-#include "wrapped_cairo.h"
+#include "cairo_wrapper.h"
 #include <string>
 #include <vector>
 

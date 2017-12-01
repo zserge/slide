@@ -164,7 +164,7 @@ foo *bar* baz
     }
 
     void Background(const Color &c) {
-      called_["_bg"]++;
+      called_["bg"]++;
       REQUIRE(c == 0xff00ff00);
     }
 
@@ -176,7 +176,7 @@ foo *bar* baz
     }
 
     void Check(void) {
-      REQUIRE(called_["_bg"] > 0);
+      REQUIRE(called_["bg"] > 0);
       REQUIRE(called_["text_width"] > 0);
       REQUIRE(called_["text_height"] > 0);
       REQUIRE(called_["text::Hello"] > 0);

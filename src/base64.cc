@@ -1,4 +1,4 @@
-#include "encoding.h"
+#include "base64.h"
 namespace slide {
 const std::string Base64::base64_chars_ =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

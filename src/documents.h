@@ -3,7 +3,7 @@
 
 #include "dimenions.h"
 #include "styles.h"
-#include "wrapped_cairo.h"
+#include "cairo_wrapper.h"
 
 namespace slide {
 
@@ -19,7 +19,7 @@ public:
 
   virtual ~Page(void);
 
-  virtual const Dimensions &size(void) { return size_; }
+  virtual const Dimensions &Size(void) { return size_; }
 
   virtual int TextHeight(slide::Style style, float scale) = 0;
 

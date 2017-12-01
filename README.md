@@ -27,7 +27,7 @@ With simple markup language you can easily make modern-looking text slides. The 
 **Images**
 
 - Line starting with `@` inserts an image from the URL (web, dropbox, local device storage)
-- Images may be scaled, e.g `@http://example.com/_bg.png 30%`
+- Images may be scaled, e.g `@http://example.com/bg.png 30%`
 - Images may have certain gravity, e.g. `@http://example.com/logo.png top`
 
 ## Download
