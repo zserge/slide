@@ -3,12 +3,15 @@
 
 #include <string>
 
-class base64 {
+namespace slide {
+class Base64 {
 public:
-	static std::string encode(unsigned char const *bytes_to_encode, unsigned int in_len, bool url);
+  static std::string Encode(unsigned char const *bytes_to_encode,
+                            unsigned int in_len, bool url);
+
 private:
-	static const std::string base64_chars;
-
+  static const std::string base64_chars_;
 };
+} // namespace slide
 
-#endif //SLIDE_ENCODING_H
+#endif // SLIDE_ENCODING_H

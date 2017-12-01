@@ -2,23 +2,23 @@
 #ifndef SLIDE_DIMENIONS_H
 #define SLIDE_DIMENIONS_H
 
-
-class dimensions{
+namespace slide {
+class Dimensions {
 public:
-	dimensions(const int w, const int h)
-			:_w(w), _h(h){}
+  Dimensions(const int w, const int h) : w_(w), h_(h) {}
 
-	int &width(void){ return _w; }
-	int &height(void){return _h;}
+  int &width(void) { return w_; }
 
-	int width(void) const { return _w; }
-	int height(void) const { return _h; }
+  int &height(void) { return h_; }
+
+  int width(void) const { return w_; }
+
+  int height(void) const { return h_; }
 
 private:
-	int _w;
-	int _h;
+  int w_;
+  int h_;
 };
+} // namespace slide
 
-
-
-#endif //SLIDE_DIMENIONS_H
+#endif // SLIDE_DIMENIONS_H
