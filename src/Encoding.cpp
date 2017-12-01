@@ -1,9 +1,9 @@
-#include "encoding.h"
+#include "Encoding.h"
 
-const std::string base64::base64_chars =
+const std::string Base64::base64_chars_ =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-std::string base64::encode(unsigned char const *bytes_to_encode,
+std::string Base64::Encode(unsigned char const *bytes_to_encode,
                            unsigned int in_len, bool url) {
   std::string ret;
   int i = 0;
@@ -20,7 +20,7 @@ std::string base64::encode(unsigned char const *bytes_to_encode,
           ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
       char_array_4[3] = char_array_3[2] & 0x3f;
       for (i = 0; (i < 4); i++) {
-        char c = base64_chars[char_array_4[i]];
+        char c = base64_chars_[char_array_4[i]];
         if (url && c == '+') {
           ret += "%2B";
         } else if (url && c == '/') {
@@ -43,7 +43,7 @@ std::string base64::encode(unsigned char const *bytes_to_encode,
         ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
     char_array_4[3] = char_array_3[2] & 0x3f;
     for (j = 0; (j < i + 1); j++) {
-      char c = base64_chars[char_array_4[i]];
+      char c = base64_chars_[char_array_4[i]];
       if (url && c == '+') {
         ret += "%2B";
       } else if (url && c == '/') {

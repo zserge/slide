@@ -1,88 +1,88 @@
 #ifndef SLIDE_APP_H
 #define SLIDE_APP_H
 
-#include "colour_t.h"
-#include "dimenions.h"
+#include "Color.h"
+#include "Dimenions.h"
+#include "Slide.h"
 #include "json.hpp"
-#include "slide.hpp"
 #include "ui.hpp"
 #include "webview.h"
 #include <fstream>
 #include <string>
 
-class command_b;
+class CommandInterface;
 
 class App {
 public:
   App(void);
-  void run(void);
-  void renderCurrentSlide(void);
-  void render(void);
+  void Run(void);
+  void RenderCurrentSlide(void);
+  void Render(void);
 
   struct webview &webview(void) {
-    return _wview;
+    return wview_;
   }
-  std::string &current_file(void) { return _current_file; }
-  slide::Deck &deck(void) { return _deck; }
-  std::string &current_text(void) { return _current_text; }
-  colour_t &foreground(void) { return _fg; }
-  colour_t &background(void) { return _bg; }
-  dimensions &preview_size(void) { return _preview_size; }
-  int &current_slide(void) { return _current_slide; }
+  std::string &current_file(void) { return current_file_; }
+  slide::Deck &deck(void) { return deck_; }
+  std::string &current_text(void) { return current_text_; }
+  Color &foreground(void) { return foreground_; }
+  Color &background(void) { return background_; }
+  Dimensions &preview_size(void) { return preview_size_; }
+  int &current_slide(void) { return current_slide_; }
 
 private:
-  void handleCommand(const std::string &data);
+  void HandleCommand(const std::string &data);
 
-  slide::Deck _deck;
-  int _current_slide = -1;
-  std::string _current_file;
-  std::string _current_text;
+  slide::Deck deck_;
+  int current_slide_ = -1;
+  std::string current_file_;
+  std::string current_text_;
   std::string _preview_data_uri;
-  dimensions _preview_size = {320, 240};
-  colour_t _fg = 0xffeeeeee;
-  colour_t _bg = 0xff333333;
-  struct webview _wview = {};
-  std::map<std::string, command_b *> _cmds_map;
+  Dimensions preview_size_ = {320, 240};
+  Color foreground_ = 0xffeeeeee;
+  Color background_ = 0xff333333;
+  struct webview wview_ = {};
+  std::map<std::string, CommandInterface *> cmds_map_;
 };
 
-class command_b {
+class CommandInterface {
 public:
-  virtual void execute(App &app, nlohmann::json &json) = 0;
+  virtual void Execute(App &app, nlohmann::json &json) = 0;
 };
 
-class create_file_cmd : public command_b {
+class CreateFileCmd : public CommandInterface {
 public:
-  void execute(App &app, nlohmann::json &json);
+  void Execute(App &app, nlohmann::json &json);
 };
 
-class open_file_cmd : public command_b {
+class OpenFileCmd : public CommandInterface {
 public:
-  void execute(App &app, nlohmann::json &json);
+  void Execute(App &app, nlohmann::json &json);
 };
 
-class export_pdf_cmd : public command_b {
+class ExportPdfCmd : public CommandInterface {
 public:
-  void execute(App &app, nlohmann::json &json);
+  void Execute(App &app, nlohmann::json &json);
 };
 
-class set_preview_size_cmd : public command_b {
+class SetPreviewSizeCmd : public CommandInterface {
 public:
-  void execute(App &app, nlohmann::json &json);
+  void Execute(App &app, nlohmann::json &json);
 };
 
-class set_palette_cmd : public command_b {
+class SetPaletteCmd : public CommandInterface {
 public:
-  void execute(App &app, nlohmann::json &json);
+  void Execute(App &app, nlohmann::json &json);
 };
 
-class set_text_cmd : public command_b {
+class SetTextCmd : public CommandInterface {
 public:
-  void execute(App &app, nlohmann::json &json);
+  void Execute(App &app, nlohmann::json &json);
 };
 
-class set_cursor_cmd : public command_b {
+class SetCursorCmd : public CommandInterface {
 public:
-  void execute(App &app, nlohmann::json &json);
+  void Execute(App &app, nlohmann::json &json);
 };
 
 #endif // SLIDE_APP_H

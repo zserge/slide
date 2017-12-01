@@ -1,9 +1,9 @@
-#include "slide.hpp"
+#include "Slide.h"
 #include <iostream>
 
-std::pair<int, int> slide::render_scale(Page_b &p, Slide &slide,
-                                        const colour_t &color, int xoff,
-                                        int yoff, float scale) {
+std::pair<int, int> slide::RenderScale(Page &p, Slide &slide,
+                                       const Color &color, int xoff, int yoff,
+                                       float scale) {
   std::cerr << "render_scale" << std::endl;
   int w = 0;
   int h = 0;
@@ -11,17 +11,17 @@ std::pair<int, int> slide::render_scale(Page_b &p, Slide &slide,
   int line_width = 0;
   int prev_line = -1;
   for (auto token : slide) {
-    if (token.line != prev_line) {
+    if (token.line_ != prev_line) {
       h = h + line_height;
       line_width = 0;
-      prev_line = token.line;
+      prev_line = token.line_;
     }
-    line_height = p.text_height(token.style, scale);
-    int token_width = p.text_width(token.text, token.style, scale);
+    line_height = p.TextHeight(token.style_, scale);
+    int token_width = p.TextWidth(token.text_, token.style_, scale);
     int x = xoff + line_width;
     int y = yoff + h;
     if (color != 0) {
-      p.text(token.text, color, x, y, token.style, scale);
+      p.Text(token.text_, color, x, y, token.style_, scale);
     }
     line_width = line_width + token_width;
     if (line_width > w) {
@@ -32,26 +32,25 @@ std::pair<int, int> slide::render_scale(Page_b &p, Slide &slide,
   return std::make_pair(xoff + w, yoff + h);
 }
 
-void slide::render(Page_b &page, Slide &slide, const colour_t &fg,
-                   const colour_t &bg) {
+void slide::Render(Page &page, Slide &slide, const Color &fg, const Color &bg) {
   if (slide.size() == 0) {
     return;
   }
   std::cerr << "render" << std::endl;
   float scale = 1.f;
-  auto size = render_scale(page, slide, 0, 0, 0, scale);
+  auto size = RenderScale(page, slide, 0, 0, 0, scale);
   scale = std::min(page.size().width() * 0.8 / size.first,
                    page.size().height() * 0.8 / size.second);
-  size = render_scale(page, slide, 0, 0, 0, scale);
+  size = RenderScale(page, slide, 0, 0, 0, scale);
 
-  page.bg(bg);
-  render_scale(page, slide, fg, (page.size().width() - size.first) / 2,
-               (page.size().height() - size.second) / 2, scale);
+  page.Background(bg);
+  RenderScale(page, slide, fg, (page.size().width() - size.first) / 2,
+              (page.size().height() - size.second) / 2, scale);
 
   std::cerr << "render complete" << std::endl;
 }
 
-slide::Deck slide::parse(const std::string &text) {
+slide::Deck slide::Parse(const std::string &text) {
   Deck deck{};
   auto lineno = 0;
   auto begin = text.cbegin();

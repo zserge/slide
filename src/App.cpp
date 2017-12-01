@@ -1,44 +1,44 @@
 #include "App.h"
 
 App::App(void) {
-  _wview.title = "Slide";
-  _wview.url = html_data_uri;
-  _wview.width = 480;
-  _wview.height = 320;
-  _wview.resizable = 1;
-  _wview.userdata = this;
+  wview_.title = "Slide";
+  wview_.url = html_data_uri;
+  wview_.width = 480;
+  wview_.height = 320;
+  wview_.resizable = 1;
+  wview_.userdata = this;
 
   // The callback for when a webview event is invoked is the handleCommand
   // method
-  _wview.external_invoke_cb = [](struct webview *w, const char *data) {
+  wview_.external_invoke_cb = [](struct webview *w, const char *data) {
     App *app = static_cast<App *>(w->userdata);
-    app->handleCommand(data);
+    app->HandleCommand(data);
   };
 
   // Command Pattern used.
   // These must be static to prevent segfault
   // If new commands are required, just make it here, then
   // add it's command string to the map as done here.
-  static create_file_cmd create;
-  static open_file_cmd open;
-  static export_pdf_cmd pdf;
-  static set_preview_size_cmd prev;
-  static set_text_cmd text;
-  static set_palette_cmd pal;
-  static set_cursor_cmd cur;
+  static CreateFileCmd create;
+  static OpenFileCmd open;
+  static ExportPdfCmd pdf;
+  static SetPreviewSizeCmd prev;
+  static SetTextCmd text;
+  static SetPaletteCmd pal;
+  static SetCursorCmd cur;
 
-  _cmds_map["create_file"] = &create;
-  _cmds_map["open_file"] = &open;
-  _cmds_map["export_pdf"] = &pdf;
-  _cmds_map["set_preview_size"] = &prev;
-  _cmds_map["set_palette"] = &pal;
-  _cmds_map["set_text"] = &text;
-  _cmds_map["set_cursor"] = &cur;
+  cmds_map_["create_file"] = &create;
+  cmds_map_["open_file"] = &open;
+  cmds_map_["export_pdf"] = &pdf;
+  cmds_map_["set_preview_size"] = &prev;
+  cmds_map_["set_palette"] = &pal;
+  cmds_map_["set_text"] = &text;
+  cmds_map_["set_cursor"] = &cur;
 }
 
-void App::run(void) {
-  webview_init(&_wview);
-  webview_dispatch(&_wview,
+void App::Run(void) {
+  webview_init(&wview_);
+  webview_dispatch(&wview_,
                    [](struct webview *w, void *arg) {
                      App *app = static_cast<App *>(w->userdata);
                      webview_eval(w, css_inject(styles_css).c_str());
@@ -46,50 +46,50 @@ void App::run(void) {
                      webview_eval(w, app_js);
                    },
                    nullptr);
-  while (webview_loop(&_wview, 1) == 0) { /* Intentionally Blank */
+  while (webview_loop(&wview_, 1) == 0) { /* Intentionally Blank */
   }
-  webview_exit(&_wview);
+  webview_exit(&wview_);
 }
 
-void App::handleCommand(const std::string &data) {
+void App::HandleCommand(const std::string &data) {
 
   auto json = nlohmann::json::parse(data);
   auto cmd = json.at("cmd").get<std::string>();
 
   // If the command isn't found, but we try to access it the command_map will
   // add the key with a null value, so before accessing confirm it's in the map
-  if (_cmds_map.find(cmd) == _cmds_map.end()) {
+  if (cmds_map_.find(cmd) == cmds_map_.end()) {
     std::cerr << cmd << " is not a valid command" << std::endl;
     return;
   }
 
-  _cmds_map[cmd]->execute(*this, json);
+  cmds_map_[cmd]->Execute(*this, json);
 
-  render();
+  Render();
 }
 
-void App::renderCurrentSlide(void) {
-  if (_current_slide != -1) {
-    PNG png(_preview_size.width(), _preview_size.height());
-    slide::render(png, _deck[_current_slide], _fg, _bg);
-    _preview_data_uri = png.dataURI();
+void App::RenderCurrentSlide(void) {
+  if (current_slide_ != -1) {
+    PNG png(preview_size_.width(), preview_size_.height());
+    slide::Render(png, deck_[current_slide_], foreground_, background_);
+    _preview_data_uri = png.DataUri();
   }
 }
 
-void App::render(void) {
+void App::Render(void) {
   auto json = nlohmann::json({});
-  json["text"] = _current_text;
+  json["text"] = current_text_;
   json["previewDataURI"] = _preview_data_uri;
   webview_eval(
-      &_wview,
+      &wview_,
       ("window.app.state=" + json.dump() + "; window.render()").c_str());
 }
 
 //----------- Below here is the command implementations for each key in the
-//command map.
+// command map.
 // If adding a new command simply add it here.
 
-void create_file_cmd::execute(App &app, nlohmann::json &json) {
+void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Creating File" << std::endl;
 
   char path[PATH_MAX];
@@ -102,7 +102,7 @@ void create_file_cmd::execute(App &app, nlohmann::json &json) {
   }
 }
 
-void open_file_cmd::execute(App &app, nlohmann::json &json) {
+void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Opening File" << std::endl;
 
   char path[PATH_MAX];
@@ -116,11 +116,11 @@ void open_file_cmd::execute(App &app, nlohmann::json &json) {
     std::string text((std::istreambuf_iterator<char>(ifs)),
                      (std::istreambuf_iterator<char>()));
     app.current_text() = text;
-    app.deck() = slide::parse(app.current_text());
+    app.deck() = slide::Parse(app.current_text());
   }
 }
 
-void export_pdf_cmd::execute(App &app, nlohmann::json &json) {
+void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
 #warning PM: This doesnt actually write to a PDF
   std::cerr << "Exporting to PDF" << std::endl;
   char path[PATH_MAX];
@@ -129,46 +129,46 @@ void export_pdf_cmd::execute(App &app, nlohmann::json &json) {
   if (strlen(path) != 0) {
     PDF pdf(path, 640, 480);
     for (auto slide : app.deck()) {
-      pdf.begin_page();
-      slide::render(pdf, slide, app.foreground(), app.background());
-      pdf.end_page();
+      pdf.BeginPage();
+      slide::Render(pdf, slide, app.foreground(), app.background());
+      pdf.EndPage();
     }
   }
 }
 
-void set_preview_size_cmd::execute(App &app, nlohmann::json &json) {
+void SetPreviewSizeCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting Preview Size" << std::endl;
   app.preview_size().width() = json.at("w").get<int>();
   app.preview_size().height() = json.at("h").get<int>();
-  app.renderCurrentSlide();
+  app.RenderCurrentSlide();
 }
 
-void set_palette_cmd::execute(App &app, nlohmann::json &json) {
+void SetPaletteCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting palette" << std::endl;
   app.foreground() = json.at("fg").get<int>();
   app.background() = json.at("bg").get<int>();
-  app.renderCurrentSlide();
+  app.RenderCurrentSlide();
 }
 
-void set_text_cmd::execute(App &app, nlohmann::json &json) {
+void SetTextCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting Text" << std::endl;
   app.current_text() = json.at("text").get<std::string>();
-  app.deck() = slide::parse(app.current_text());
+  app.deck() = slide::Parse(app.current_text());
   std::ofstream file(app.current_file());
   file << app.current_text();
 }
 
-void set_cursor_cmd::execute(App &app, nlohmann::json &json) {
+void SetCursorCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting Cursor" << std::endl;
   auto cursor = json.at("cursor").get<int>();
   app.current_slide() = -1;
   for (int i = 0; app.current_slide() == -1 && i < app.deck().size(); i++) {
     for (auto token : app.deck()[i]) {
-      if (token.pos >= cursor) {
+      if (token.position_ >= cursor) {
         app.current_slide() = i;
         break;
       }
     }
   }
-  app.renderCurrentSlide();
+  app.RenderCurrentSlide();
 }

@@ -1,2 +1,2 @@
-#include "styles.h"
+#include "Styles.h"
 // intentionally blank

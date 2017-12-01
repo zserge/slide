@@ -11,7 +11,7 @@ if(CAIRO_FOUND)
 	message(STATUS \t${CAIRO_LIBRARIES})
 endif()
 
-add_library(slide-lib slide.cpp dimenions.cpp colour_t.cpp wcairo.cpp documents.cpp encoding.cpp)
+add_library(slide-lib Slide.cpp Dimenions.cpp Color.cpp WCairo.cpp Documents.cpp Encoding.cpp)
 target_link_libraries(slide-lib)
 target_link_libraries(slide-lib INTERFACE ${CAIRO_LIBRARIES})
 
@@ -19,7 +19,7 @@ add_library(slide-core INTERFACE)
 target_include_directories(slide-core INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
 target_link_libraries(slide-core INTERFACE slide-lib)
 
-add_library(app App.cpp dimenions.cpp colour_t.cpp)
+add_library(app App.cpp Dimenions.cpp Color.cpp)
 target_include_directories(app INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
 target_link_libraries(app PRIVATE webview slide-core)
 
