@@ -1,11 +1,11 @@
 #ifndef SLIDE_HPP
 #define SLIDE_HPP
 
-#include "Color.h"
-#include "Dimenions.h"
-#include "Documents.h"
-#include "Styles.h"
-#include "WCairo.h"
+#include "color.h"
+#include "dimenions.h"
+#include "documents.h"
+#include "styles.h"
+#include "wrapped_cairo.h"
 #include <string>
 #include <vector>
 

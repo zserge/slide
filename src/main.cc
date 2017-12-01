@@ -1,7 +1,7 @@
-#include <App.h>
+#include <app.h>
 
 int main() {
   slide::App app;
-	app.Run();
+  app.Run();
   return 0;
 }

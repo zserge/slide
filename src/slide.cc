@@ -1,4 +1,4 @@
-#include "Slide.h"
+#include "slide.h"
 #include <iostream>
 
 std::pair<int, int> slide::RenderScale(Page &p, Slide &slide,
