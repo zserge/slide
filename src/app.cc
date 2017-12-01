@@ -71,7 +71,7 @@ void App::HandleCommand(const std::string &data) {
 
 void App::RenderCurrentSlide(void) {
   if (current_slide_ != -1) {
-    PNG png(preview_size_.width(), preview_size_.height());
+    PNG png(preview_size_.Width(), preview_size_.Height());
     slide::Render(png, deck_[current_slide_], foreground_, background_);
     _preview_data_uri = png.DataUri();
   }
@@ -97,9 +97,9 @@ void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0,
                  "New presentation...", nullptr, path, PATH_MAX - 1);
   if (std::string(path).length() != 0) {
-    app.current_file() = std::string(path);
+    app.CurrentFile() = std::string(path);
     webview_set_title(&app.webview(),
-                      ("Slide - " + app.current_file()).c_str());
+                      ("Slide - " + app.CurrentFile()).c_str());
   }
 }
 
@@ -110,14 +110,14 @@ void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_OPEN, 0,
                  "Open presentation...", nullptr, path, sizeof(path) - 1);
   if (std::string(path).length() != 0) {
-    app.current_file() = path;
+    app.CurrentFile() = path;
     webview_set_title(&app.webview(),
-                      ("Slide - " + app.current_file()).c_str());
-    std::ifstream ifs(app.current_file());
+                      ("Slide - " + app.CurrentFile()).c_str());
+    std::ifstream ifs(app.CurrentFile());
     std::string text((std::istreambuf_iterator<char>(ifs)),
                      (std::istreambuf_iterator<char>()));
-    app.current_text() = text;
-    app.deck() = slide::Parse(app.current_text());
+    app.CurrentText() = text;
+    app.Deck() = slide::Parse(app.CurrentText());
   }
 }
 
@@ -129,9 +129,9 @@ void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
                  nullptr, path, sizeof(path) - 1);
   if (strlen(path) != 0) {
     PDF pdf(path, 640, 480);
-    for (auto slide : app.deck()) {
+    for (auto slide : app.Deck()) {
       pdf.BeginPage();
-      slide::Render(pdf, slide, app.foreground(), app.background());
+      slide::Render(pdf, slide, app.Foreground(), app.Background());
       pdf.EndPage();
     }
   }
@@ -139,34 +139,34 @@ void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
 
 void SetPreviewSizeCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting Preview Size" << std::endl;
-  app.preview_size().width() = json.at("w").get<int>();
-  app.preview_size().height() = json.at("h").get<int>();
+	app.PreviewSize().Width() = json.at("w").get<int>();
+	app.PreviewSize().Height() = json.at("h").get<int>();
   app.RenderCurrentSlide();
 }
 
 void SetPaletteCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting palette" << std::endl;
-  app.foreground() = json.at("fg").get<int>();
-  app.background() = json.at("bg").get<int>();
+  app.Foreground() = json.at("fg").get<int>();
+  app.Background() = json.at("bg").get<int>();
   app.RenderCurrentSlide();
 }
 
 void SetTextCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting Text" << std::endl;
-  app.current_text() = json.at("text").get<std::string>();
-  app.deck() = slide::Parse(app.current_text());
-  std::ofstream file(app.current_file());
-  file << app.current_text();
+  app.CurrentText() = json.at("text").get<std::string>();
+  app.Deck() = slide::Parse(app.CurrentText());
+  std::ofstream file(app.CurrentFile());
+  file << app.CurrentText();
 }
 
 void SetCursorCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting Cursor" << std::endl;
   auto cursor = json.at("cursor").get<int>();
-  app.current_slide() = -1;
-  for (int i = 0; app.current_slide() == -1 && i < app.deck().size(); i++) {
-    for (auto token : app.deck()[i]) {
+  app.CurrentSlide() = -1;
+  for (int i = 0; app.CurrentSlide() == -1 && i < app.Deck().size(); i++) {
+    for (auto token : app.Deck()[i]) {
       if (token.position_ >= cursor) {
-        app.current_slide() = i;
+        app.CurrentSlide() = i;
         break;
       }
     }

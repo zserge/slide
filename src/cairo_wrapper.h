@@ -9,7 +9,7 @@
 
 // cairo wrapper class
 namespace slide {
-class WCairo {
+class CairoWrapper {
 public:
   static cairo_surface_t *
   CreateSurface(int width, int height,

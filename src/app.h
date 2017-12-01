@@ -27,19 +27,19 @@ public:
     return wview_;
   }
 
-  std::string &current_file(void) { return current_file_; }
+  std::string &CurrentFile(void) { return current_file_; }
 
-  slide::Deck &deck(void) { return deck_; }
+  slide::Deck &Deck(void) { return deck_; }
 
-  std::string &current_text(void) { return current_text_; }
+  std::string &CurrentText(void) { return current_text_; }
 
-  Color &foreground(void) { return foreground_; }
+  Color &Foreground(void) { return foreground_; }
 
-  Color &background(void) { return background_; }
+  Color &Background(void) { return background_; }
 
-  Dimensions &preview_size(void) { return preview_size_; }
+  Dimensions &PreviewSize(void) { return preview_size_; }
 
-  int &current_slide(void) { return current_slide_; }
+  int &CurrentSlide(void) { return current_slide_; }
 
 private:
   void HandleCommand(const std::string &data);

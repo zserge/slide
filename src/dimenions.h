@@ -7,13 +7,13 @@ class Dimensions {
 public:
   Dimensions(const int w, const int h) : w_(w), h_(h) {}
 
-  int &width(void) { return w_; }
+  int &Width(void) { return w_; }
 
-  int &height(void) { return h_; }
+  int &Height(void) { return h_; }
 
-  int width(void) const { return w_; }
+  int Width(void) const { return w_; }
 
-  int height(void) const { return h_; }
+  int Height(void) const { return h_; }
 
 private:
   int w_;

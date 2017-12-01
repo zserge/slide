@@ -39,13 +39,13 @@ void slide::Render(Page &page, Slide &slide, const Color &fg, const Color &bg) {
   std::cerr << "render" << std::endl;
   float scale = 1.f;
   auto size = RenderScale(page, slide, 0, 0, 0, scale);
-  scale = std::min(page.size().width() * 0.8 / size.first,
-                   page.size().height() * 0.8 / size.second);
+  scale = std::min(page.Size().Width() * 0.8 / size.first,
+                   page.Size().Height() * 0.8 / size.second);
   size = RenderScale(page, slide, 0, 0, 0, scale);
 
   page.Background(bg);
-  RenderScale(page, slide, fg, (page.size().width() - size.first) / 2,
-              (page.size().height() - size.second) / 2, scale);
+  RenderScale(page, slide, fg, ( page.Size().Width() - size.first) / 2,
+              ( page.Size().Height() - size.second) / 2, scale);
 
   std::cerr << "render complete" << std::endl;
 }
