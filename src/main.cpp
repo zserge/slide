@@ -1,7 +1,7 @@
 #include <App.h>
 
 int main() {
-  App app;
+  slide::App app;
 	app.Run();
   return 0;
 }
