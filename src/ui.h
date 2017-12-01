@@ -1,7 +1,7 @@
 #ifndef UI_HPP
 #define UI_HPP
 
-static inline std::string css_inject(const std::string &css) {
+static inline std::string CssInject(const std::string &css) {
   std::string esc;
   const auto hex = "0123456789ABCDEF";
   for (auto c : css) {
