@@ -1,9 +1,9 @@
 #ifndef SLIDE_DOCUMENTS_H
 #define SLIDE_DOCUMENTS_H
 
+#include "cairo_wrapper.h"
 #include "dimenions.h"
 #include "styles.h"
-#include "cairo_wrapper.h"
 
 namespace slide {
 
@@ -36,6 +36,9 @@ protected:
   cairo_surface_t *surface_;
   cairo_t *cr_;
   const std::string name_;
+
+  virtual void InitialiseContext(void) = 0;
+  virtual void EnsureInitialised(void);
 };
 
 // Abstract
@@ -74,6 +77,9 @@ public:
   void Save(const std::string filename);
 
   std::string DataUri(void);
+
+protected:
+  void InitialiseContext(void);
 };
 
 class PDF : public Document {
@@ -94,6 +100,9 @@ public:
 
   void Text(const std::string &text, const Color &color, int x, int y,
             slide::Style style, float scale);
+
+protected:
+  void InitialiseContext(void);
 };
 } // namespace slide
 
