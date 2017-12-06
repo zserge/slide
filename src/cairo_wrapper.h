@@ -15,6 +15,9 @@ public:
   CreateSurface(int width, int height,
                 cairo_format_t format = CAIRO_FORMAT_ARGB32);
 
+  static cairo_surface_t *CreatePDFSurface(const std::string &filename,
+                                           const int width, const int height);
+
   static cairo_t *Create(cairo_surface_t *target);
 
   static void SetFont(cairo_t *cr, slide::Style style, float scale);

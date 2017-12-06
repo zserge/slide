@@ -187,6 +187,9 @@ foo *bar* baz
 
   private:
     std::map<std::string, int> called_;
+    void InitialiseContext(void) {
+      // Do nothing
+    }
   };
 
   MockPage mockPage;

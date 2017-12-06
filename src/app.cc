@@ -98,8 +98,7 @@ void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
                  "New presentation...", nullptr, path, PATH_MAX - 1);
   if (std::string(path).length() != 0) {
     app.CurrentFile() = std::string(path);
-    webview_set_title(&app.webview(),
-                      ("Slide - " + app.CurrentFile()).c_str());
+    webview_set_title(&app.webview(), ("Slide - " + app.CurrentFile()).c_str());
   }
 }
 
@@ -111,8 +110,7 @@ void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
                  "Open presentation...", nullptr, path, sizeof(path) - 1);
   if (std::string(path).length() != 0) {
     app.CurrentFile() = path;
-    webview_set_title(&app.webview(),
-                      ("Slide - " + app.CurrentFile()).c_str());
+    webview_set_title(&app.webview(), ("Slide - " + app.CurrentFile()).c_str());
     std::ifstream ifs(app.CurrentFile());
     std::string text((std::istreambuf_iterator<char>(ifs)),
                      (std::istreambuf_iterator<char>()));
@@ -122,13 +120,20 @@ void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
 }
 
 void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
-#warning PM: This doesnt actually write to a PDF
   std::cerr << "Exporting to PDF" << std::endl;
   char path[PATH_MAX];
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0, "Export PDF...",
                  nullptr, path, sizeof(path) - 1);
   if (strlen(path) != 0) {
-    PDF pdf(path, 640, 480);
+    std::string path_str(path);
+    const std::string extension(".pdf");
+    if (path_str.length() <= extension.length() ||
+        path_str.compare(path_str.length() - extension.length(),
+                         extension.length(), extension)) {
+      path_str += extension;
+    }
+    std::cerr << "writing to " << path_str << std::endl;
+    PDF pdf(path_str, 640, 480);
     for (auto slide : app.Deck()) {
       pdf.BeginPage();
       slide::Render(pdf, slide, app.Foreground(), app.Background());
@@ -139,8 +144,8 @@ void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
 
 void SetPreviewSizeCmd::Execute(App &app, nlohmann::json &json) {
   std::cerr << "Setting Preview Size" << std::endl;
-	app.PreviewSize().Width() = json.at("w").get<int>();
-	app.PreviewSize().Height() = json.at("h").get<int>();
+  app.PreviewSize().Width() = json.at("w").get<int>();
+  app.PreviewSize().Height() = json.at("h").get<int>();
   app.RenderCurrentSlide();
 }
 
