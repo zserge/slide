@@ -37,8 +37,8 @@ int CairoWrapper::TextHeight(cairo_t *cr, slide::Style style, float scale) {
   return (int)(fe.height);
 }
 
-int CairoWrapper::TextWidth(cairo_t *cr, const std::string &text, slide::Style style,
-                      float scale) {
+int CairoWrapper::TextWidth(cairo_t *cr, const std::string &text,
+                            slide::Style style, float scale) {
   cairo_text_extents_t te;
   SetFont(cr, style, scale);
   cairo_text_extents(cr, text.c_str(), &te);
@@ -51,8 +51,9 @@ void CairoWrapper::Background(cairo_t *cr, int w, int h, const Color &color) {
   cairo_fill(cr);
 }
 
-void CairoWrapper::Text(cairo_t *cr, const std::string &text, const Color &color,
-                  int x, int y, slide::Style style, float scale) {
+void CairoWrapper::Text(cairo_t *cr, const std::string &text,
+                        const Color &color, int x, int y, slide::Style style,
+                        float scale) {
   cairo_font_extents_t fe;
   SetSourceColor(cr, color);
   SetFont(cr, style, scale);
@@ -78,7 +79,7 @@ void CairoWrapper::Destroy(cairo_t *pcr) {
 }
 
 cairo_surface_t *CairoWrapper::CreateSurface(int width, int height,
-                                       cairo_format_t format) {
+                                             cairo_format_t format) {
   cairo_surface_t *rc = cairo_image_surface_create(format, width, height);
   std::cerr << "Surface created at " << rc << std::endl;
   return rc;
@@ -96,8 +97,17 @@ void CairoWrapper::WriteToPng(cairo_surface_t *surface, const char *filename) {
 }
 
 void CairoWrapper::WriteToPngStream(cairo_surface_t *surface,
-                              cairo_write_func_t write_func, void *closure) {
+                                    cairo_write_func_t write_func,
+                                    void *closure) {
   auto rc = cairo_surface_write_to_png_stream(surface, write_func, closure);
   std::cerr << "cairo_surface_write_to_png_stream returned " << rc << std::endl;
+}
+
+cairo_surface_t *CairoWrapper::CreatePDFSurface(const std::string &filename,
+                                                const int width,
+                                                const int height) {
+  auto rc = cairo_pdf_surface_create(filename.c_str(), width, height);
+  std::cerr << "cairo_pdf_surface_create returned " << rc;
+  return rc;
 }
 } // namespace slide
