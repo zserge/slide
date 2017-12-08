@@ -11,7 +11,7 @@ if(CAIRO_FOUND)
 	message(STATUS \t${CAIRO_LIBRARIES})
 endif()
 
-add_library(slide-lib slide.cc color.cc cairo_wrapper.cc documents.cc base64.cc)
+add_library(slide-lib slide.cc color.cc cairo_wrapper.cc documents.cc base64.cc styles.cc)
 target_link_libraries(slide-lib)
 target_link_libraries(slide-lib INTERFACE ${CAIRO_LIBRARIES})
 

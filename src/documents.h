@@ -21,15 +21,15 @@ public:
 
   virtual const Dimensions &Size(void) { return size_; }
 
-  virtual int TextHeight(slide::Style style, float scale) = 0;
+  virtual int TextHeight(Style::Style style, float scale) = 0;
 
-  virtual int TextWidth(const std::string &text, slide::Style style,
+  virtual int TextWidth(const std::string &text, Style::Style style,
                         float scale) = 0;
 
   virtual void Background(const Color &color) = 0;
 
   virtual void Text(const std::string &text, const Color &color, int x, int y,
-                    slide::Style style, float scale) = 0;
+					Style::Style style, float scale) = 0;
 
 protected:
   const Dimensions size_;
@@ -65,14 +65,14 @@ public:
 
   ~PNG(void);
 
-  int TextHeight(slide::Style style, float scale);
+  int TextHeight(Style::Style style, float scale);
 
-  int TextWidth(const std::string &text, slide::Style style, float scale);
+  int TextWidth(const std::string &text, Style::Style style, float scale);
 
   void Background(const Color &color);
 
   void Text(const std::string &text, const Color &color, int x, int y,
-            slide::Style style, float scale);
+			Style::Style style, float scale);
 
   void Save(const std::string filename);
 
@@ -92,14 +92,14 @@ public:
 
   void EndPage(void);
 
-  int TextHeight(slide::Style style, float scale);
+  int TextHeight(Style::Style style, float scale);
 
-  int TextWidth(const std::string &text, slide::Style style, float scale);
+  int TextWidth(const std::string &text, Style::Style style, float scale);
 
   void Background(const Color &color);
 
   void Text(const std::string &text, const Color &color, int x, int y,
-            slide::Style style, float scale);
+			Style::Style style, float scale);
 
 protected:
   void InitialiseContext(void);

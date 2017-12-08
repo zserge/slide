@@ -48,7 +48,7 @@ private:
   int current_slide_ = -1;
   std::string current_file_;
   std::string current_text_;
-  std::string _preview_data_uri;
+  std::string preview_data_uri_;
   Dimensions preview_size_ = {320, 240};
   Color foreground_ = 0xffeeeeee;
   Color background_ = 0xff333333;
