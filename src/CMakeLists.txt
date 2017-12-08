@@ -1,23 +1,9 @@
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "../cmake")
-message(STATUS Looking\ for\ Cairo\ using\ FindCairo.cmake\ in:)
-message(STATUS \t${CMAKE_MODULE_PATH})
+find_package(PkgConfig)
+pkg_check_modules(CAIRO REQUIRED cairo)
 
-find_package(Cairo REQUIRED)
-
-if(CAIRO_FOUND)
-	message(STATUS Cairo\ Included\ dirs:)
-	message(STATUS \t${CAIRO_INCLUDE_DIRS})
-	message(STATUS Cairo\ Libraries:)
-	message(STATUS \t${CAIRO_LIBRARIES})
-endif()
-
-add_library(slide-lib slide.cc color.cc cairo_wrapper.cc documents.cc base64.cc)
-target_link_libraries(slide-lib)
-target_link_libraries(slide-lib INTERFACE ${CAIRO_LIBRARIES})
-
-add_library(slide-core INTERFACE)
-target_include_directories(slide-core INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
-target_link_libraries(slide-core INTERFACE slide-lib)
+add_library(slide-core slide.cc color.cc cairo_wrapper.cc documents.cc base64.cc)
+target_include_directories(slide-core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
+target_link_libraries(slide-core PUBLIC ${CAIRO_LIBRARIES})
 
 add_library(app app.cc color.cc)
 target_include_directories(app INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
@@ -55,7 +41,7 @@ elseif(APPLE)
 else()
 	add_executable(slide main.cc ${CMAKE_SOURCE_DIR}/res/main.rc)
 endif()
-target_link_libraries(slide PRIVATE slide-core webview json app slide-lib)
+target_link_libraries(slide PRIVATE slide-core webview json app)
 
 if(APPLE)
 	install(TARGETS slide RUNTIME DESTINATION "slide.app/Contents/MacOS")
