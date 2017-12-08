@@ -12,6 +12,15 @@
 namespace slide {
 
 struct Token {
+public:
+	Token(const long p, const int l, const Style s, const std::string t)
+	:position_(p), line_(l), style_(s), text_(t)
+	{ /* Intentionally blank */}
+	long position(void) const { return position_; }
+	int line(void) const { return line_; }
+	Style style(void) const { return style_; }
+	const std::string& text(void) const { return text_; }
+protected:
   const long position_;
   const int line_;
   const Style style_;

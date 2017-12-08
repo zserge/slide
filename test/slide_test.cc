@@ -76,36 +76,36 @@ Some *other bold* text)");
   REQUIRE(deck.size() == 4);
 
   REQUIRE(deck[0].size() == 3);
-  REQUIRE(deck[0][0].text_ == "Header 1");
-  REQUIRE(deck[0][1].text_ == "Foo");
-  REQUIRE(deck[0][2].text_ == "Bar");
-  REQUIRE(deck[0][0].style_ == slide::Style::Header);
-  REQUIRE(deck[0][1].style_ == slide::Style::Normal);
-  REQUIRE(deck[0][2].style_ == slide::Style::Normal);
-  REQUIRE(deck[0][0].line_ == 1);
-  REQUIRE(deck[0][1].line_ == 2);
-  REQUIRE(deck[0][2].line_ == 3);
+  REQUIRE(deck[0][0].text() == "Header 1");
+  REQUIRE(deck[0][1].text() == "Foo");
+  REQUIRE(deck[0][2].text() == "Bar");
+  REQUIRE(deck[0][0].style() == Header);
+  REQUIRE(deck[0][1].style() == Normal);
+  REQUIRE(deck[0][2].style() == Normal);
+  REQUIRE(deck[0][0].line() == 1);
+  REQUIRE(deck[0][1].line() == 2);
+  REQUIRE(deck[0][2].line() == 3);
 
   REQUIRE(deck[1].size() == 9);
-  REQUIRE(deck[1][0].text_ == "Header 2");
+  REQUIRE(deck[1][0].text() == "Header 2");
 
   REQUIRE(deck[2].size() == 1);
-  REQUIRE(deck[2][0].text_ == "Header 3");
+  REQUIRE(deck[2][0].text() == "Header 3");
 
   REQUIRE(deck[3].size() == 11);
-  REQUIRE(deck[3][0].text_ == "Header 4");
-  REQUIRE(deck[3][1].text_ == "");
-  REQUIRE(deck[3][2].text_ == "# normal line");
-  REQUIRE(deck[3][3].text_ == "  normal line");
-  REQUIRE(deck[3][4].text_ == "Кириллица. € ß");
-  REQUIRE(deck[3][5].text_ == "Some ");
-  REQUIRE(deck[3][6].text_ == "bold");
-  REQUIRE(deck[3][6].style_ == slide::Style::Strong);
-  REQUIRE(deck[3][7].text_ == " text");
-  REQUIRE(deck[3][8].text_ == "Some ");
-  REQUIRE(deck[3][9].text_ == "other bold");
-  REQUIRE(deck[3][9].style_ == slide::Style::Strong);
-  REQUIRE(deck[3][10].text_ == " text");
+  REQUIRE(deck[3][1].text() == "");
+  REQUIRE(deck[3][0].text() == "Header 4");
+  REQUIRE(deck[3][2].text() == "# normal line");
+  REQUIRE(deck[3][3].text() == "  normal line");
+  REQUIRE(deck[3][4].text() == "Кириллица. € ß");
+  REQUIRE(deck[3][5].text() == "Some ");
+  REQUIRE(deck[3][6].text() == "bold");
+  REQUIRE(deck[3][6].style() == Strong);
+  REQUIRE(deck[3][7].text() == " text");
+  REQUIRE(deck[3][8].text() == "Some ");
+  REQUIRE(deck[3][9].text() == "other bold");
+  REQUIRE(deck[3][9].style() == Strong);
+  REQUIRE(deck[3][10].text() == " text");
 }
 
 TEST_CASE("Asterisks", "[slide::parse]") {
@@ -119,28 +119,28 @@ foo **bar baz
 )");
   REQUIRE(deck[0].size() == 9);
 
-  REQUIRE(deck[0][0].text_ == "foo ");
-  REQUIRE(deck[0][0].style_ == slide::Style::Normal);
-  REQUIRE(deck[0][1].text_ == "bar");
-  REQUIRE(deck[0][1].style_ == slide::Style::Strong);
-  REQUIRE(deck[0][2].text_ == " baz");
-  REQUIRE(deck[0][2].style_ == slide::Style::Normal);
+  REQUIRE(deck[0][0].text() == "foo ");
+  REQUIRE(deck[0][0].style() == Normal);
+  REQUIRE(deck[0][1].text() == "bar");
+  REQUIRE(deck[0][1].style() == Strong);
+  REQUIRE(deck[0][2].text() == " baz");
+  REQUIRE(deck[0][2].style() == Normal);
 
-  REQUIRE(deck[0][3].text_ == "foo bar");
-  REQUIRE(deck[0][3].style_ == slide::Style::Strong);
-  REQUIRE(deck[0][4].text_ == " baz");
-  REQUIRE(deck[0][4].style_ == slide::Style::Normal);
+  REQUIRE(deck[0][3].text() == "foo bar");
+  REQUIRE(deck[0][3].style() == Strong);
+  REQUIRE(deck[0][4].text() == " baz");
+  REQUIRE(deck[0][4].style() == Normal);
 
-  REQUIRE(deck[0][5].text_ == "foo ");
-  REQUIRE(deck[0][5].style_ == slide::Style::Normal);
-  REQUIRE(deck[0][6].text_ == "bar baz");
-  REQUIRE(deck[0][6].style_ == slide::Style::Strong);
+  REQUIRE(deck[0][5].text() == "foo ");
+  REQUIRE(deck[0][5].style() == Normal);
+  REQUIRE(deck[0][6].text() == "bar baz");
+  REQUIRE(deck[0][6].style() == Strong);
 
-  REQUIRE(deck[0][7].text_ == "foo *bar baz");
-  REQUIRE(deck[0][7].style_ == slide::Style::Normal);
+  REQUIRE(deck[0][7].text() == "foo *bar baz");
+  REQUIRE(deck[0][7].style() == Normal);
 
-  REQUIRE(deck[0][8].text_ == "* foo bar baz*");
-  REQUIRE(deck[0][8].style_ == slide::Style::Normal);
+  REQUIRE(deck[0][8].text() == "* foo bar baz*");
+  REQUIRE(deck[0][8].style() == Normal);
 }
 
 TEST_CASE("Render", "[slide::render]") {
@@ -153,12 +153,12 @@ foo *bar* baz
     MockPage(void) : Page(100, 50) { /* Intentionally Blank */
     }
 
-    int TextHeight(slide::Style style, float scale) {
+    int TextHeight(Style style, float scale) {
       called_["text_height"]++;
       return scale * 10;
     }
 
-    int TextWidth(const std::string &s, slide::Style style, float scale) {
+    int TextWidth(const std::string &s, Style style, float scale) {
       called_["text_width"]++;
       return s.size() * scale * 5;
     }
@@ -193,7 +193,7 @@ foo *bar* baz
   };
 
   MockPage mockPage;
-  slide::Render(mockPage, deck[0], 0xffff0000, 0xff00ff00);
+  Render(mockPage, deck[0], 0xffff0000, 0xff00ff00);
   mockPage.Check();
 }
 } // namespace slide

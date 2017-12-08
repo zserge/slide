@@ -4,24 +4,24 @@
 std::pair<int, int> slide::RenderScale(Page &p, Slide &slide,
                                        const Color &color, int xoff, int yoff,
                                        float scale) {
-  std::cerr << "render_scale" << std::endl;
+  //std::cerr << "render_scale" << std::endl;
   int w = 0;
   int h = 0;
   int line_height = 0;
   int line_width = 0;
   int prev_line = -1;
   for (auto token : slide) {
-    if (token.line_ != prev_line) {
+    if (token.line() != prev_line) {
       h = h + line_height;
       line_width = 0;
-      prev_line = token.line_;
+      prev_line = token.line();
     }
-    line_height = p.TextHeight(token.style_, scale);
-    int token_width = p.TextWidth(token.text_, token.style_, scale);
+    line_height = p.TextHeight(token.style(), scale);
+    int token_width = p.TextWidth(token.text(), token.style(), scale);
     int x = xoff + line_width;
     int y = yoff + h;
     if (color != 0) {
-      p.Text(token.text_, color, x, y, token.style_, scale);
+      p.Text(token.text(), color, x, y, token.style(), scale);
     }
     line_width = line_width + token_width;
     if (line_width > w) {
@@ -36,7 +36,7 @@ void slide::Render(Page &page, Slide &slide, const Color &fg, const Color &bg) {
   if (slide.size() == 0) {
     return;
   }
-  std::cerr << "render" << std::endl;
+  //std::cerr << "render" << std::endl;
   float scale = 1.f;
   auto size = RenderScale(page, slide, 0, 0, 0, scale);
   scale = std::min(page.Size().Width() * 0.8 / size.first,
@@ -44,91 +44,119 @@ void slide::Render(Page &page, Slide &slide, const Color &fg, const Color &bg) {
   size = RenderScale(page, slide, 0, 0, 0, scale);
 
   page.Background(bg);
-  RenderScale(page, slide, fg, ( page.Size().Width() - size.first) / 2,
-              ( page.Size().Height() - size.second) / 2, scale);
+  RenderScale(page, slide, fg, (page.Size().Width() - size.first) / 2,
+              (page.Size().Height() - size.second) / 2, scale);
 
-  std::cerr << "render complete" << std::endl;
+  //std::cerr << "render complete" << std::endl;
 }
 
 slide::Deck slide::Parse(const std::string &text) {
   Deck deck{};
-  auto lineno = 0;
+  auto line_num = 0;
   auto begin = text.cbegin();
+
   for (auto it = begin, end = text.cend(); it < end;) {
     // Skip leading newlines
-    for (; *it == '\n' && it < end; ++it, ++lineno)
+    for (; *it == '\n' && it < end; ++it, ++line_num)
       ;
+
     // Parse next slide
-    Slide slide{};
-    for (; *it != '\n' && it < end; ++it, ++lineno) {
-      std::string text;
-      Style style{Style::Normal};
+    Slide slide;
+
+    for (; *it != '\n' && it < end; ++it, ++line_num) {
+      std::string previous_text;
+
+      Style current_text_style = Normal;
+
       switch (*it) {
-      case '@':
+      case Markers.ImagePath:
         ++it;
         // TODO: parse image path and geometry
         for (; it < end && *it != '\n'; ++it) {
         }
         break;
-      case '#':
+
+      case Markers.Heading:
         ++it;
-        style = Style::Header;
+        current_text_style = Header;
         for (; it < end && *it == ' '; ++it)
-          ;
+          ; // advance past whitespace
         break;
+
       case ' ':
-        ++it;
+        ++it; // advance past whitespace
         if (it < end && *it == ' ') {
+          // doublespace is code
           ++it;
-          style = Style::Monospace;
+          current_text_style = Monospace;
         } else {
-          text.push_back(' ');
+          previous_text += ' ';
         }
         break;
       case '.':
         ++it;
         break;
+      default:
+        break;
       }
+
       bool insert_empty_token = true;
+
       for (; it < end && *it != '\n'; ++it) {
-        if (style == Style::Normal && *it == '*') {
+
+        if (current_text_style == Normal && *it == Markers.Bold) {
           ++it;
-          if (it < end && *it != ' ' && *it != '*') {
-            std::string em;
-            for (; it < end && *it != '*' && *it != '\n'; ++it) {
-              em.push_back(*it);
+
+          // first char is *
+          if (it < end && *it != ' ' && *it != Markers.Bold) {
+
+            // not a "**text" or a "* text"
+            std::string bold_text;
+
+            for (; it < end && *it != Markers.Bold && *it != '\n'; ++it) {
+              // Add the character while it's not a '*' or  newline eg
+              // "*hello*"
+              bold_text += *it;
             }
+
+            // end of a bold marker and
             if (*it == '*') {
-              if (text.size() > 0) {
-                slide.push_back(
-                    Token{std::distance(begin, it), lineno, style, text});
+              if (!previous_text.empty()) {
+                // There's already something in the inner_text before this level
+                // of bold so add that before adding the bold stuff
+                slide.emplace_back(std::distance(begin, it), line_num,
+                                   current_text_style, previous_text);
               }
-              slide.push_back(
-                  Token{std::distance(begin, it), lineno, Style::Strong, em});
+              slide.emplace_back(std::distance(begin, it), line_num, Strong,
+                                 bold_text);
               insert_empty_token = false;
-              text = "";
+              previous_text = "";
             } else {
-              text.push_back('*');
-              text.append(em);
+              // must be a newline?
+              previous_text += Markers.Bold + bold_text;
             }
           } else {
-            text.push_back('*');
-            if (*it != '*') {
-              text.push_back(*it);
+            // is a "**text" or "* text" or a "*\n" or a "\n"
+            previous_text += Markers.Bold;
+            if (*it != Markers.Bold) {
+              // pretty sure here can only be a ' ' or a newline
+              previous_text += *it;
             }
           }
         } else {
-          text.push_back(*it);
+          previous_text += *it;
         }
       }
-      if (insert_empty_token || text.size() > 0) {
-        slide.push_back(Token{std::distance(begin, it), lineno, style, text});
+      if (insert_empty_token || !previous_text.empty()) {
+        slide.emplace_back(std::distance(begin, it), line_num,
+                           current_text_style, previous_text);
       }
     }
+
     // Skip trailing newlines
-    for (; *it == '\n' && it < end; ++it, ++lineno)
+    for (; *it == '\n' && it < end; ++it, ++line_num)
       ;
-    if (slide.size() > 0) {
+    if (!slide.empty()) {
       deck.push_back(slide);
     }
   }

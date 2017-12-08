@@ -65,14 +65,14 @@ void CairoWrapper::Text(cairo_t *cr, const std::string &text,
 void CairoWrapper::ShowPage(cairo_t *cr) { cairo_show_page(cr); }
 
 void CairoWrapper::DestroySurface(cairo_surface_t *psurf) {
-  std::cerr << "Attempting to destroy surface at " << psurf << std::endl;
+  //std::cerr << "Attempting to destroy surface at " << psurf << std::endl;
   if (nullptr != psurf) {
     cairo_surface_destroy(psurf);
   }
 }
 
 void CairoWrapper::Destroy(cairo_t *pcr) {
-  std::cerr << "Attempting to destroy cairo at " << pcr << std::endl;
+  //std::cerr << "Attempting to destroy cairo at " << pcr << std::endl;
   if (nullptr != pcr) {
     cairo_destroy(pcr);
   }
@@ -81,33 +81,33 @@ void CairoWrapper::Destroy(cairo_t *pcr) {
 cairo_surface_t *CairoWrapper::CreateSurface(int width, int height,
                                              cairo_format_t format) {
   cairo_surface_t *rc = cairo_image_surface_create(format, width, height);
-  std::cerr << "Surface created at " << rc << std::endl;
+  //std::cerr << "Surface created at " << rc << std::endl;
   return rc;
 }
 
 cairo_t *CairoWrapper::Create(cairo_surface_t *target) {
   cairo_t *rc = cairo_create(target);
-  std::cerr << "Cairo created at " << rc << std::endl;
+  //std::cerr << "Cairo created at " << rc << std::endl;
   return rc;
 }
 
 void CairoWrapper::WriteToPng(cairo_surface_t *surface, const char *filename) {
   auto rc = cairo_surface_write_to_png(surface, filename);
-  std::cerr << "cairo_surface_write_to_png returned " << rc << std::endl;
+  //std::cerr << "cairo_surface_write_to_png returned " << rc << std::endl;
 }
 
 void CairoWrapper::WriteToPngStream(cairo_surface_t *surface,
                                     cairo_write_func_t write_func,
                                     void *closure) {
   auto rc = cairo_surface_write_to_png_stream(surface, write_func, closure);
-  std::cerr << "cairo_surface_write_to_png_stream returned " << rc << std::endl;
+  //std::cerr << "cairo_surface_write_to_png_stream returned " << rc << std::endl;
 }
 
 cairo_surface_t *CairoWrapper::CreatePDFSurface(const std::string &filename,
                                                 const int width,
                                                 const int height) {
   auto rc = cairo_pdf_surface_create(filename.c_str(), width, height);
-  std::cerr << "cairo_pdf_surface_create returned " << rc;
+  //std::cerr << "cairo_pdf_surface_create returned " << rc;
   return rc;
 }
 } // namespace slide

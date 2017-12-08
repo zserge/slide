@@ -8,7 +8,7 @@ Page::Page(const int w, const int h, const std::string &name)
     : size_(w, h), name_(name), surface_(nullptr), cr_(nullptr) {}
 
 Page::~Page(void) {
-  std::cerr << "Page_b::dtor destroying _surface and _cr" << std::endl;
+  //std::cerr << "Page_b::dtor destroying _surface and _cr" << std::endl;
   CairoWrapper::DestroySurface(surface_);
   CairoWrapper::Destroy(cr_);
 }
@@ -95,7 +95,7 @@ std::string PNG::DataUri(void) {
 }
 
 void PNG::InitialiseContext(void) {
-  std::cerr << "PNG::ctor creating surface_ and cr_" << std::endl;
+  //	std::cerr << "PNG::ctor creating surface_ and cr_" << std::endl;
   surface_ = CairoWrapper::CreateSurface(size_.Width(), size_.Height());
   cr_ = CairoWrapper::Create(surface_);
 }
@@ -137,7 +137,7 @@ void PDF::Text(const std::string &text, const Color &color, int x, int y,
 }
 
 void PDF::InitialiseContext(void) {
-  std::cerr << "PDF::ctor creating surface_ and cr_" << std::endl;
+  //std::cerr << "PDF::ctor creating surface_ and cr_" << std::endl;
   surface_ =
       CairoWrapper::CreatePDFSurface(name_, size_.Width(), size_.Height());
   cr_ = CairoWrapper::Create(surface_);
