@@ -21,15 +21,16 @@ With simple markup language you can easily make modern-looking text slides. The 
 **Text style**
 
 - Text surrounded with `*` is rendered as bold (emphasized). Use `*` without a matching end marker to render a normal `*` sign
-| Text | Text on slide |
-|---|---|
-|`* hello` | `* hello` |
-|`*hello`| `* hello` |
-|`* hello*` | `* hello*` |
-|`**hello**`| `**hello**` |
-| `*hello*` | **hello** |
-| `*hello *` | **hello**|
-| `***hello***` | **`**hello**`** |
+
+  | Text | Text on slide |
+  |---|---|
+  |`* hello` | `* hello` |
+  |`*hello`| `*hello` |
+  |`* hello*` | `* hello*` |
+  |`**hello**`| `**hello**` |
+  | `*hello*` | **hello** |
+  | `*hello *` | **hello**|
+  | `***hello***` | **`**hello**`** |
 
 - Line starting with `#` is a header
 - Line starting with `␣␣` (two spaces) is rendered as code (monospace).
