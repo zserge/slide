@@ -1,5 +1,5 @@
 #include "app.h"
-
+#include "debug_print.h"
 namespace slide {
 App::App(void) {
   wview_.title = "Slide";
@@ -47,6 +47,7 @@ void App::Run(void) {
                      webview_eval(w, app_js);
                    },
                    nullptr);
+
   while (webview_loop(&wview_, 1) == 0) { /* Intentionally Blank */
   }
   webview_exit(&wview_);
@@ -60,7 +61,7 @@ void App::HandleCommand(const std::string &data) {
   // If the command isn't found, but we try to access it the command_map will
   // add the key with a null value, so before accessing confirm it's in the map
   if (cmds_map_.find(cmd) == cmds_map_.end()) {
-    std::cerr << cmd << " is not a valid command" << std::endl;
+    debug_print(cmd << " is not a valid command");
     return;
   }
 
@@ -71,8 +72,11 @@ void App::HandleCommand(const std::string &data) {
 
 void App::RenderCurrentSlide(void) {
   if (current_slide_ != -1) {
+    debug_print("App::RenderCurrentSlide()");
+    debug_print("app instance details: " << *this);
     PNG png(preview_size_.Width(), preview_size_.Height());
     slide::Render(png, deck_[current_slide_], foreground_, background_);
+    debug_print("App::RenderCurrentSlide() render complete");
     preview_data_uri_ = png.DataUri();
   }
 }

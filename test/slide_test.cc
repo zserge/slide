@@ -3,15 +3,16 @@
 
 #include <slide.h>
 namespace slide {
-TEST_CASE("Empty _deck", "[slide::parse]") {
+TEST_CASE("Empty deck", "[slide::parse]") {
   slide::Deck deck;
 
+  // An empty deck is actually 1 slide with no text on
   deck = slide::Parse("");
-  REQUIRE(deck.size() == 0);
+  REQUIRE(deck.size() == 1);
   deck = slide::Parse("\n");
-  REQUIRE(deck.size() == 0);
+  REQUIRE(deck.size() == 1);
   deck = slide::Parse("\n\n");
-  REQUIRE(deck.size() == 0);
+  REQUIRE(deck.size() == 1);
 }
 
 TEST_CASE("Slide boundaries", "[slide::parse]") {
@@ -119,22 +120,11 @@ foo **bar baz
 **notbold**
 *bold *
 * not bold *
+*not bold
+* not bold
 )");
 
-//  REQUIRE(deck[0].size() == 12);
-//  REQUIRE(deck[0][0] == Token(0, 0, Normal, "foo "));
-//  REQUIRE(deck[0][1] == Token(0, 0, Strong, "bar"));
-//  REQUIRE(deck[0][2] == Token(0, 0, Normal, " baz"));
-//  REQUIRE(deck[0][3] == Token(0, 0, Strong, "foo bar"));
-//  REQUIRE(deck[0][4] == Token(0, 0, Normal, " baz"));
-//  REQUIRE(deck[0][5] == Token(0, 0, Normal, "foo "));
-//  REQUIRE(deck[0][6] == Token(0, 0, Strong, "bar baz"));
-//  REQUIRE(deck[0][7] == Token(0, 0, Normal, "foo **bar baz"));
-//  REQUIRE(deck[0][8] == Token(0, 0, Normal, "* foo bar baz*"));
-//  REQUIRE(deck[0][9] == Token(0, 0, Normal, "**notbold**"));
-//  REQUIRE(deck[0][10] == Token(0, 0, Strong, "bold "));
-//  REQUIRE(deck[0][11] == Token(0, 0, Normal, "* not bold *"));
-  CHECK(deck[0].size() == 12);
+  CHECK(deck[0].size() == 14);
   CHECK(deck[0][0] == Token(0, 0, Style::Normal, "foo "));
   CHECK(deck[0][1] == Token(0, 0, Style::Strong, "bar"));
   CHECK(deck[0][2] == Token(0, 0, Style::Normal, " baz"));
@@ -147,6 +137,8 @@ foo **bar baz
   CHECK(deck[0][9] == Token(0, 0, Style::Normal, "**notbold**"));
   CHECK(deck[0][10] == Token(0, 0, Style::Strong, "bold "));
   CHECK(deck[0][11] == Token(0, 0, Style::Normal, "* not bold *"));
+  CHECK(deck[0][12] == Token(0, 0, Style::Normal, "*not bold"));
+  CHECK(deck[0][13] == Token(0, 0, Style::Normal, "* not bold"));
 }
 
 TEST_CASE("Render", "[slide::render]") {

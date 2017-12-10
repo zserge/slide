@@ -2,14 +2,14 @@
 #include "base64.h"
 #include <iostream>
 #include <vector>
+#include "debug_print.h"
 
-#define print(a) /* std::cerr << a << std::endl; */
 namespace slide {
 Page::Page(const int w, const int h, const std::string &name)
     : size_(w, h), name_(name), surface_(nullptr), cr_(nullptr) {}
 
 Page::~Page(void) {
-  print("Page_b::dtor destroying _surface and _cr");
+  debug_print("Page_b::dtor destroying _surface and _cr");
   CairoWrapper::DestroySurface(surface_);
   CairoWrapper::Destroy(cr_);
 }
@@ -67,7 +67,7 @@ void PNG::Background(const Color &color) {
 }
 
 void PNG::Text(const std::string &text, const Color &color, int x, int y,
-			   Style::Style style, float scale) {
+               Style::Style style, float scale) {
   EnsureInitialised();
   CairoWrapper::Text(cr_, text, color, x, y, style, scale);
 }
@@ -132,13 +132,13 @@ void PDF::Background(const Color &color) {
 }
 
 void PDF::Text(const std::string &text, const Color &color, int x, int y,
-			   Style::Style style, float scale) {
+               Style::Style style, float scale) {
   EnsureInitialised();
   CairoWrapper::Text(cr_, text, color, x, y, style, scale);
 }
 
 void PDF::InitialiseContext(void) {
-  print("PDF::ctor creating surface_ and cr_");
+  debug_print("PDF::ctor creating surface_ and cr_");
   surface_ =
       CairoWrapper::CreatePDFSurface(name_, size_.Width(), size_.Height());
   cr_ = CairoWrapper::Create(surface_);

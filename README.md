@@ -20,7 +20,17 @@ With simple markup language you can easily make modern-looking text slides. The 
 
 **Text style**
 
-- Text surrounded with `*` is rendered as bold (emphasized). Use `**` to render a normal `*` sign
+- Text surrounded with `*` is rendered as bold (emphasized). Use `*` without a matching end marker to render a normal `*` sign
+| Text | Text on slide |
+|---|---|
+|`* hello` | `* hello` |
+|`*hello`| `* hello` |
+|`* hello*` | `* hello*` |
+|`**hello**`| `**hello**` |
+| `*hello*` | **hello** |
+| `*hello *` | **hello**|
+| `***hello***` | **`**hello**`** |
+
 - Line starting with `#` is a header
 - Line starting with `␣␣` (two spaces) is rendered as code (monospace).
 
@@ -34,18 +44,29 @@ With simple markup language you can easily make modern-looking text slides. The 
 
 See Github [Releases](https://github.com/zserge/slide/releases/latest).
 
-## Build instructions
+## Dependency instructions
 
 ```bash
 # Install Cairo
 $ sudo apt-get install libcairo2-dev
 or
 $ brew install cairo
+```
 
-# Build
+## Building 
+
+### Debug
+```bash
 $ mkdir build
 $ cd build
 $ cmake ..
+$ make
+```
+### Release
+```bash
+$ mkdir build
+$ cd build
+$ cmake -D CMAKE_BUILD_TYPE=Release ..
 $ make
 ```
 

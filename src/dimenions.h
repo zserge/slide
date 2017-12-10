@@ -16,10 +16,10 @@ public:
 
   int Height(void) const { return h_; }
 
-	friend std::ostream&operator << (std::ostream& out, const Dimensions& d){
-		out << "(w_: " << d.w_ << ", h_: " << d.h_ << ")";
-		return out;
-	}
+  friend std::ostream &operator<<(std::ostream &out, const Dimensions &d) {
+    out << "(w_: " << d.w_ << ", h_: " << d.h_ << ")";
+    return out;
+  }
 
 private:
   int w_;
