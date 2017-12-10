@@ -1,7 +1,7 @@
 #include "slide.h"
 #include <iostream>
 
-#define print(a) /*std::cerr << a << std::endl*/
+#define print(a) std::cerr << a << std::endl
 
 std::pair<int, int> slide::RenderScale(Page &p, Slide &slide,
                                        const Color &color, int xoff, int yoff,
@@ -35,10 +35,10 @@ std::pair<int, int> slide::RenderScale(Page &p, Slide &slide,
 }
 
 void slide::Render(Page &page, Slide &slide, const Color &fg, const Color &bg) {
-  if (slide.size() == 0) {
+	print("slide::Render(slide = " << slide.size());
+	if (slide.empty()) {
     return;
   }
-  print("render");
   float scale = 1.f;
   auto size = RenderScale(page, slide, 0, 0, 0, scale);
   scale = (float)std::min(page.Size().Width() * 0.8 / size.first,
@@ -58,7 +58,7 @@ slide::Deck slide::Parse(const std::string &text) {
   auto begin = text.cbegin();
 
   print("------------------------");
-  print("Parsing text:\t" << text);
+  print("Parsing text [" << text.length() << "]:\t" << text);
 
   for (auto it = begin, end = text.cend(); it < end;) {
     // Skip leading newlines
@@ -184,6 +184,13 @@ slide::Deck slide::Parse(const std::string &text) {
       print("------------------------");
       deck.push_back(slide);
     }
+  }
+
+  // Need to add a dummy slide so that if there are none the preview will still display a slide with no text
+  if(deck.empty()){
+	  print("Adding dummy slide");
+    Slide s = {Token(0, 0, Style::Normal, "")};
+    deck.push_back(s);
   }
   return deck;
 }

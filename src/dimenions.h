@@ -2,6 +2,7 @@
 #ifndef SLIDE_DIMENIONS_H
 #define SLIDE_DIMENIONS_H
 
+#include <ostream>
 namespace slide {
 class Dimensions {
 public:
@@ -14,6 +15,11 @@ public:
   int Width(void) const { return w_; }
 
   int Height(void) const { return h_; }
+
+	friend std::ostream&operator << (std::ostream& out, const Dimensions& d){
+		out << "(w_: " << d.w_ << ", h_: " << d.h_ << ")";
+		return out;
+	}
 
 private:
   int w_;
