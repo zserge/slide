@@ -63,7 +63,7 @@ elseif(APPLE)
 else()
 	add_executable(slide main.cc ${CMAKE_SOURCE_DIR}/res/main.rc)
 endif()
-target_link_libraries(slide PRIVATE slide-core webview json app slide-lib)
+target_link_libraries(slide PRIVATE slide-core webview json app)
 
 if(APPLE)
 	install(TARGETS slide RUNTIME DESTINATION "slide.app/Contents/MacOS")
