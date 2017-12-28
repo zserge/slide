@@ -1,7 +1,7 @@
 find_package(PkgConfig)
 pkg_check_modules(CAIRO REQUIRED cairo)
 
-add_library(slide-core slide.cc color.cc cairo_wrapper.cc documents.cc base64.cc)
+add_library(slide-core slide.cc color.cc cairo_wrapper.cc documents.cc base64.cc styles.cc)
 target_include_directories(slide-core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
 target_link_libraries(slide-core PUBLIC ${CAIRO_LIBRARIES})
 
