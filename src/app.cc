@@ -1,5 +1,5 @@
 #include "app.h"
-
+#include "debug_print.h"
 namespace slide {
 App::App(void) {
   wview_.title = "Slide";
@@ -47,6 +47,7 @@ void App::Run(void) {
                      webview_eval(w, app_js);
                    },
                    nullptr);
+
   while (webview_loop(&wview_, 1) == 0) { /* Intentionally Blank */
   }
   webview_exit(&wview_);
@@ -60,7 +61,7 @@ void App::HandleCommand(const std::string &data) {
   // If the command isn't found, but we try to access it the command_map will
   // add the key with a null value, so before accessing confirm it's in the map
   if (cmds_map_.find(cmd) == cmds_map_.end()) {
-    std::cerr << cmd << " is not a valid command" << std::endl;
+    debug_print(cmd << " is not a valid command");
     return;
   }
 
@@ -71,16 +72,20 @@ void App::HandleCommand(const std::string &data) {
 
 void App::RenderCurrentSlide(void) {
   if (current_slide_ != -1) {
+    debug_print("App::RenderCurrentSlide()");
+    debug_print("app instance details: " << *this);
     PNG png(preview_size_.Width(), preview_size_.Height());
     slide::Render(png, deck_[current_slide_], foreground_, background_);
-    _preview_data_uri = png.DataUri();
+    debug_print("App::RenderCurrentSlide() render complete");
+    preview_data_uri_ = png.DataUri();
   }
 }
 
 void App::Render(void) {
   auto json = nlohmann::json({});
   json["text"] = current_text_;
-  json["previewDataURI"] = _preview_data_uri;
+  json["previewDataURI"] = preview_data_uri_;
+  // std::cerr << "JSON Dump: " << json.dump() << std::endl;
   webview_eval(
       &wview_,
       ("window.app.state=" + json.dump() + "; window.render()").c_str());
@@ -91,7 +96,7 @@ void App::Render(void) {
 // If adding a new command simply add it here.
 
 void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
-  std::cerr << "Creating File" << std::endl;
+  // std::cerr << "Creating File" << std::endl;
 
   char path[PATH_MAX];
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0,
@@ -103,7 +108,7 @@ void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
 }
 
 void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
-  std::cerr << "Opening File" << std::endl;
+  // std::cerr << "Opening File" << std::endl;
 
   char path[PATH_MAX];
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_OPEN, 0,
@@ -120,7 +125,7 @@ void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
 }
 
 void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
-  std::cerr << "Exporting to PDF" << std::endl;
+  // std::cerr << "Exporting to PDF" << std::endl;
   char path[PATH_MAX];
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0, "Export PDF...",
                  nullptr, path, sizeof(path) - 1);
@@ -132,7 +137,7 @@ void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
                          extension.length(), extension)) {
       path_str += extension;
     }
-    std::cerr << "writing to " << path_str << std::endl;
+    // std::cerr << "writing to " << path_str << std::endl;
     PDF pdf(path_str, 640, 480);
     for (auto slide : app.Deck()) {
       pdf.BeginPage();
@@ -143,34 +148,35 @@ void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
 }
 
 void SetPreviewSizeCmd::Execute(App &app, nlohmann::json &json) {
-  std::cerr << "Setting Preview Size" << std::endl;
+  // std::cerr << "Setting Preview Size" << std::endl;
   app.PreviewSize().Width() = json.at("w").get<int>();
   app.PreviewSize().Height() = json.at("h").get<int>();
   app.RenderCurrentSlide();
 }
 
 void SetPaletteCmd::Execute(App &app, nlohmann::json &json) {
-  std::cerr << "Setting palette" << std::endl;
+  // std::cerr << "Setting palette" << std::endl;
   app.Foreground() = json.at("fg").get<int>();
   app.Background() = json.at("bg").get<int>();
   app.RenderCurrentSlide();
 }
 
 void SetTextCmd::Execute(App &app, nlohmann::json &json) {
-  std::cerr << "Setting Text" << std::endl;
+  // std::cerr << "Setting Text" << std::endl;
   app.CurrentText() = json.at("text").get<std::string>();
   app.Deck() = slide::Parse(app.CurrentText());
   std::ofstream file(app.CurrentFile());
   file << app.CurrentText();
+  app.RenderCurrentSlide();
 }
 
 void SetCursorCmd::Execute(App &app, nlohmann::json &json) {
-  std::cerr << "Setting Cursor" << std::endl;
+  // std::cerr << "Setting Cursor" << std::endl;
   auto cursor = json.at("cursor").get<int>();
   app.CurrentSlide() = -1;
   for (int i = 0; app.CurrentSlide() == -1 && i < app.Deck().size(); i++) {
     for (auto token : app.Deck()[i]) {
-      if (token.position_ >= cursor) {
+      if (token.position() >= cursor) {
         app.CurrentSlide() = i;
         break;
       }

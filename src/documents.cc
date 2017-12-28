@@ -2,13 +2,14 @@
 #include "base64.h"
 #include <iostream>
 #include <vector>
+#include "debug_print.h"
 
 namespace slide {
 Page::Page(const int w, const int h, const std::string &name)
     : size_(w, h), name_(name), surface_(nullptr), cr_(nullptr) {}
 
 Page::~Page(void) {
-  std::cerr << "Page_b::dtor destroying _surface and _cr" << std::endl;
+  debug_print("Page_b::dtor destroying _surface and _cr");
   CairoWrapper::DestroySurface(surface_);
   CairoWrapper::Destroy(cr_);
 }
@@ -50,12 +51,12 @@ PNG::PNG(const int w, const int h, const std::string &name)
 PNG::~PNG(void) { /* Intentionally Blank */
 }
 
-int PNG::TextHeight(slide::Style style, float scale) {
+int PNG::TextHeight(Style::Style style, float scale) {
   EnsureInitialised();
   return CairoWrapper::TextHeight(cr_, style, scale);
 }
 
-int PNG::TextWidth(const std::string &text, slide::Style style, float scale) {
+int PNG::TextWidth(const std::string &text, Style::Style style, float scale) {
   EnsureInitialised();
   return CairoWrapper::TextWidth(cr_, text, style, scale);
 }
@@ -66,7 +67,7 @@ void PNG::Background(const Color &color) {
 }
 
 void PNG::Text(const std::string &text, const Color &color, int x, int y,
-               slide::Style style, float scale) {
+               Style::Style style, float scale) {
   EnsureInitialised();
   CairoWrapper::Text(cr_, text, color, x, y, style, scale);
 }
@@ -95,7 +96,7 @@ std::string PNG::DataUri(void) {
 }
 
 void PNG::InitialiseContext(void) {
-  std::cerr << "PNG::ctor creating surface_ and cr_" << std::endl;
+  //	std::cerr << "PNG::ctor creating surface_ and cr_" << std::endl;
   surface_ = CairoWrapper::CreateSurface(size_.Width(), size_.Height());
   cr_ = CairoWrapper::Create(surface_);
 }
@@ -115,12 +116,12 @@ void PDF::BeginPage(void) {
 
 void PDF::EndPage(void) { CairoWrapper::ShowPage(cr_); }
 
-int PDF::TextHeight(slide::Style style, float scale) {
+int PDF::TextHeight(Style::Style style, float scale) {
   EnsureInitialised();
   return CairoWrapper::TextHeight(cr_, style, scale);
 }
 
-int PDF::TextWidth(const std::string &text, slide::Style style, float scale) {
+int PDF::TextWidth(const std::string &text, Style::Style style, float scale) {
   EnsureInitialised();
   return CairoWrapper::TextWidth(cr_, text, style, scale);
 }
@@ -131,13 +132,13 @@ void PDF::Background(const Color &color) {
 }
 
 void PDF::Text(const std::string &text, const Color &color, int x, int y,
-               slide::Style style, float scale) {
+               Style::Style style, float scale) {
   EnsureInitialised();
   CairoWrapper::Text(cr_, text, color, x, y, style, scale);
 }
 
 void PDF::InitialiseContext(void) {
-  std::cerr << "PDF::ctor creating surface_ and cr_" << std::endl;
+  debug_print("PDF::ctor creating surface_ and cr_");
   surface_ =
       CairoWrapper::CreatePDFSurface(name_, size_.Width(), size_.Height());
   cr_ = CairoWrapper::Create(surface_);

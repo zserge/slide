@@ -1,20 +1,44 @@
 #ifndef SLIDE_HPP
 #define SLIDE_HPP
 
+#include "cairo_wrapper.h"
 #include "color.h"
 #include "dimenions.h"
 #include "documents.h"
 #include "styles.h"
-#include "cairo_wrapper.h"
+#include <ostream>
 #include <string>
 #include <vector>
-
 namespace slide {
 
-struct Token {
+class Token {
+public:
+  Token(const long p, const int l, const Style::Style s, const std::string t)
+      : position_(p), line_(l), style_(s), text_(t) { /* Intentionally blank */
+  }
+  long position(void) const { return position_; }
+  int line(void) const { return line_; }
+  Style::Style style(void) const { return style_; }
+  const std::string &text(void) const { return text_; }
+
+  bool operator==(const Token &rhs) const {
+    return (style_ == rhs.style_ && text_ == rhs.text_);
+  }
+
+  bool operator==(const Style::Style &rhs) const { return style_ == rhs; }
+
+  bool operator==(const std::string &rhs) const { return text_ == rhs; }
+
+  friend std::ostream &operator<<(std::ostream &out, const Token &rhs) {
+    out << rhs.position_ << ", " << rhs.line_ << ", "
+        << Style::to_str(rhs.style_) << ", " << rhs.text_;
+    return out;
+  }
+
+protected:
   const long position_;
   const int line_;
-  const Style style_;
+  const Style::Style style_;
   const std::string text_;
 };
 

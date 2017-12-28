@@ -2,6 +2,7 @@
 #define SLIDE_COLOUR_T_H
 
 #include <cstdint>
+#include <ostream>
 
 namespace slide {
 class Color {
@@ -44,6 +45,11 @@ public:
   bool operator!=(const int &rhs) const { return rhs != (int)argb_; }
 
   bool operator!=(int &rhs) const { return rhs != (int)argb_; }
+
+    friend std::ostream& operator << (std::ostream& out, const Color& c){
+      out << c.argb_;
+      return out;
+    }
 
 protected:
   uint32_t argb_;

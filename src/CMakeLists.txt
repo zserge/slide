@@ -1,7 +1,7 @@
 find_package(PkgConfig)
 pkg_check_modules(CAIRO REQUIRED cairo)
 
-add_library(slide-core slide.cc color.cc cairo_wrapper.cc documents.cc base64.cc)
+add_library(slide-core slide.cc color.cc cairo_wrapper.cc documents.cc base64.cc styles.cc)
 target_include_directories(slide-core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CAIRO_INCLUDE_DIRS})
 target_link_libraries(slide-core PUBLIC ${CAIRO_LIBRARIES})
 
@@ -11,6 +11,13 @@ target_link_libraries(app PRIVATE webview slide-core)
 
 add_library(webview INTERFACE)
 target_include_directories(webview INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
+
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+	message("Debug build defined, re-run cmake with -D CMAKE_BUILD_TYPE=Release for release build")
+	target_compile_definitions(app PRIVATE "-DDEBUG")
+endif()
+
 if(APPLE)
 	message(STATUS "Apple detected")
 	target_compile_definitions(webview INTERFACE "-DWEBVIEW_COCOA=1")

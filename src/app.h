@@ -9,6 +9,7 @@
 #include "webview.h"
 #include <fstream>
 #include <string>
+#include <unordered_map>
 
 namespace slide {
 class CommandInterface;
@@ -41,6 +42,27 @@ public:
 
   int &CurrentSlide(void) { return current_slide_; }
 
+  friend std::ostream &operator<<(std::ostream &out, const App &a) {
+
+    out << "deck_ size: " << a.deck_.size() << std::endl
+        << "current_slide_: " << a.current_slide_ << std::endl
+        << "current_file_: " << a.current_file_ << std::endl
+        << "current_text_ and preview_data_uri_ omitted"
+        << std::endl
+        //<< "current_text_: " << a.current_text_ << std::endl
+        //<< "preview_data_uri: " << a.preview_data_uri_ << std::endl
+        << "preview_data_size: " << a.preview_size_ << std::endl
+        << "foreground_: " << a.foreground_ << std::endl
+        << "background_: " << a.background_ << std::endl
+        << "wview_: " << a.wview_.title << std::endl
+        << "commands_map_: ";
+
+    for (auto cmd : a.cmds_map_) {
+      out << cmd.first << ", ";
+    }
+    return out;
+  }
+
 private:
   void HandleCommand(const std::string &data);
 
@@ -48,12 +70,12 @@ private:
   int current_slide_ = -1;
   std::string current_file_;
   std::string current_text_;
-  std::string _preview_data_uri;
+  std::string preview_data_uri_;
   Dimensions preview_size_ = {320, 240};
   Color foreground_ = 0xffeeeeee;
   Color background_ = 0xff333333;
   struct webview wview_ = {};
-  std::map<std::string, CommandInterface *> cmds_map_;
+  std::unordered_map<std::string, CommandInterface*> cmds_map_;
 };
 
 class CommandInterface {

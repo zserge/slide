@@ -20,19 +20,19 @@ public:
 
   static cairo_t *Create(cairo_surface_t *target);
 
-  static void SetFont(cairo_t *cr, slide::Style style, float scale);
+  static void SetFont(cairo_t *cr, Style::Style style, float scale);
 
   static void SetSourceColor(cairo_t *cr, const Color &color);
 
-  static int TextHeight(cairo_t *cr, slide::Style style, float scale);
+  static int TextHeight(cairo_t *cr, Style::Style style, float scale);
 
-  static int TextWidth(cairo_t *cr, const std::string &text, slide::Style style,
+  static int TextWidth(cairo_t *cr, const std::string &text, Style::Style style,
                        float scale);
 
   static void Background(cairo_t *cr, int w, int h, const Color &color);
 
   static void Text(cairo_t *cr, const std::string &text, const Color &color,
-                   int x, int y, slide::Style style, float scale);
+                   int x, int y, Style::Style style, float scale);
 
   static void ShowPage(cairo_t *cr);
 
