@@ -2,8 +2,6 @@
 #include "styles.h"
 #include <iostream>
 
-#define DEBUG
-
 #include "debug_print.h"
 
 std::pair<int, int> slide::RenderScale(Page &p, Slide &slide,
