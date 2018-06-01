@@ -1,6 +1,9 @@
 #include "slide.h"
 #include "styles.h"
 #include <iostream>
+
+#define DEBUG
+
 #include "debug_print.h"
 
 std::pair<int, int> slide::RenderScale(Page &p, Slide &slide,
@@ -48,7 +51,7 @@ void slide::Render(Page &page, Slide &slide, const Color &fg, const Color &bg) {
   RenderScale(page, slide, fg, (page.Size().Width() - size.first) / 2,
               (page.Size().Height() - size.second) / 2, scale);
 
-	debug_print("slide::Render complete");
+  debug_print("slide::Render complete");
 }
 
 slide::Deck slide::Parse(const std::string &text) {
@@ -56,8 +59,8 @@ slide::Deck slide::Parse(const std::string &text) {
   auto line_num = 0;
   auto begin = text.cbegin();
 
-	debug_print("------------------------");
-	debug_print("Parsing text [" << text.length() << "]:\t" << text);
+  debug_print("------------------------");
+  debug_print("Parsing text [" << text.length() << "]:\t" << text);
 
   for (auto it = begin, end = text.cend(); it < end;) {
     // Skip leading newlines
@@ -71,7 +74,7 @@ slide::Deck slide::Parse(const std::string &text) {
       std::string previous_text;
 
       Style::Style current_text_style = Style::Normal;
-		debug_print("Top of loop: " << *it);
+      debug_print("Top of loop: " << *it);
 
       switch (*it) {
       case Style::Markers.ImagePath:
@@ -105,7 +108,7 @@ slide::Deck slide::Parse(const std::string &text) {
         break;
       }
 
-		debug_print("After switch: " << *it);
+      debug_print("After switch: " << *it);
 
       bool insert_empty_token = true;
 
@@ -113,14 +116,15 @@ slide::Deck slide::Parse(const std::string &text) {
 
         if (current_text_style == Style::Normal && *it == Style::Markers.Bold) {
           ++it;
-			debug_print("Bold start marker found and it's normal");
+          debug_print("Bold start marker found and it's normal");
 
           // first char is *
           if (it < end && *it != ' ' && *it != Style::Markers.Bold &&
               *it != '\n') {
-			  debug_print("Second character isn't whitespace or a bold marker or a "
-                  "newline\t"
-                  << *it);
+            debug_print(
+                "Second character isn't whitespace or a bold marker or a "
+                "newline\t"
+                << *it);
 
             // not a "**text" or a "* text"
             std::string bold_text;
@@ -132,59 +136,61 @@ slide::Deck slide::Parse(const std::string &text) {
               bold_text += *it;
             }
             if (*it == '\n') {
-				debug_print("Newline found before end of bold capture, so stopping "
-                    "bold capture and addding it as normal text");
+              debug_print(
+                  "Newline found before end of bold capture, so stopping "
+                  "bold capture and addding it as normal text");
               previous_text = Style::Markers.Bold + bold_text;
               break;
             }
 
-			  debug_print("Text to be bold:\t" << bold_text);
-			  debug_print("it:\t" << *it);
+            debug_print("Text to be bold:\t" << bold_text);
+            debug_print("it:\t" << *it);
 
             // end of a bold marker found
             if (*it == Style::Markers.Bold) {
-				debug_print("End of bold marker found");
+              debug_print("End of bold marker found");
 
               if (!previous_text.empty()) {
                 // There's already something in the inner_text before this level
                 // of bold so add that before adding the bold stuff
-				  debug_print("Emplacing a non empty string:\t" << previous_text);
+                debug_print("Emplacing a non empty string:\t" << previous_text);
                 slide.emplace_back(std::distance(begin, it), line_num,
                                    current_text_style, previous_text);
               }
-				debug_print("Emplacing a bold text:\t" << bold_text);
+              debug_print("Emplacing a bold text:\t" << bold_text);
               slide.emplace_back(std::distance(begin, it), line_num,
                                  Style::Strong, bold_text);
 
               insert_empty_token = false;
               previous_text = "";
             } else {
-				debug_print("Not end of bold marker found");
+              debug_print("Not end of bold marker found");
               previous_text += Style::Markers.Bold + bold_text;
             }
           } else {
-			  debug_print("(1) Second character is a bold marker or whitespace:\t"
-                  << *it);
+            debug_print("(1) Second character is a bold marker or whitespace:\t"
+                        << *it);
             previous_text += Style::Markers.Bold;
             if (*it == '\n') {
-				debug_print("Newline found immediately after a first bold marker so "
-                    "starting a new token in the current slide.");
+              debug_print(
+                  "Newline found immediately after a first bold marker so "
+                  "starting a new token in the current slide.");
               break;
             }
             previous_text += *it;
-			  debug_print("(1a): " << previous_text);
+            debug_print("(1a): " << previous_text);
           }
         }
 
         else {
-			debug_print(
+          debug_print(
               "No bold marker found, or currently not processing normal text:\t"
               << *it);
           previous_text += *it;
         }
       }
       if (insert_empty_token || !previous_text.empty()) {
-		  debug_print("Adding empty token:\t" << previous_text);
+        debug_print("Adding empty token:\t" << previous_text);
         slide.emplace_back(std::distance(begin, it), line_num,
                            current_text_style, previous_text);
       }
@@ -195,8 +201,8 @@ slide::Deck slide::Parse(const std::string &text) {
       ;
 
     if (!slide.empty()) {
-		debug_print("Adding slide");
-		debug_print("------------------------");
+      debug_print("Adding slide");
+      debug_print("------------------------");
       deck.push_back(slide);
     }
   }
@@ -204,7 +210,7 @@ slide::Deck slide::Parse(const std::string &text) {
   // Need to add a dummy slide so that if there are none the preview will still
   // display a slide with no text
   if (deck.empty()) {
-	  debug_print("Adding dummy slide");
+    debug_print("Adding dummy slide");
     Slide s = {Token(0, 0, Style::Normal, "")};
     deck.push_back(s);
   }

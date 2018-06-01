@@ -1,8 +1,8 @@
 #include "documents.h"
 #include "base64.h"
+#include "debug_print.h"
 #include <iostream>
 #include <vector>
-#include "debug_print.h"
 
 namespace slide {
 Page::Page(const int w, const int h, const std::string &name)
