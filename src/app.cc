@@ -1,5 +1,7 @@
 #include "app.h"
 #include "debug_print.h"
+
+#include <array>
 namespace slide {
 App::App(void) {
   wview_.title = "Slide";
@@ -97,8 +99,8 @@ void App::Render(void) {
 
 void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
   // std::cerr << "Creating File" << std::endl;
+  std::array<char, PATH_MAX> path;
 
-  char path[PATH_MAX];
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0,
                  "New presentation...", nullptr, path, PATH_MAX - 1);
   if (std::string(path).length() != 0) {
@@ -110,7 +112,7 @@ void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
 void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
   // std::cerr << "Opening File" << std::endl;
 
-  char path[PATH_MAX];
+  std::array<char, PATH_MAX> path;
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_OPEN, 0,
                  "Open presentation...", nullptr, path, sizeof(path) - 1);
   if (std::string(path).length() != 0) {
@@ -126,7 +128,7 @@ void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
 
 void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
   // std::cerr << "Exporting to PDF" << std::endl;
-  char path[PATH_MAX];
+  std::array<char, PATH_MAX> path;
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0, "Export PDF...",
                  nullptr, path, sizeof(path) - 1);
   if (strlen(path) != 0) {
