@@ -40,7 +40,7 @@ int CairoWrapper::TextHeight(cairo_t *cr, Style::Style style, float scale) {
 }
 
 int CairoWrapper::TextWidth(cairo_t *cr, const std::string &text,
-							Style::Style style, float scale) {
+                            Style::Style style, float scale) {
   cairo_text_extents_t te = {};
   SetFont(cr, style, scale);
   cairo_text_extents(cr, text.c_str(), &te);

@@ -2,7 +2,7 @@
 #define SLIDE_APP_H
 
 #include "color.h"
-#include "dimenions.h"
+#include "dimensions.h"
 #include "json.hpp"
 #include "slide.h"
 #include "ui.h"

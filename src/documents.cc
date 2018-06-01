@@ -1,8 +1,8 @@
 #include "documents.h"
 #include "base64.h"
+#include "debug_print.h"
 #include <iostream>
 #include <vector>
-#include "debug_print.h"
 
 namespace slide {
 Page::Page(const int w, const int h, const std::string &name)
@@ -30,7 +30,7 @@ Page::Page(const int w, const int h, cairo_surface_t *const psurf,
 }
 
 Page::Page(void)
-    : size_(0, 0), surface_(0), cr_(0),
+    : size_(0, 0), surface_(nullptr), cr_(nullptr),
       name_("No Name Set") { /* intentionally blank */
 }
 
