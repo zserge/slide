@@ -1,7 +1,7 @@
 #include "app.h"
 #include "debug_print.h"
-
 #include <array>
+
 namespace slide {
 App::App(void) {
   wview_.title = "Slide";
@@ -98,7 +98,6 @@ void App::Render(void) {
 // If adding a new command simply add it here.
 
 void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
-  // std::cerr << "Creating File" << std::endl;
   std::array<char, PATH_MAX> path;
 
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0,
@@ -129,6 +128,7 @@ void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
 void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
   // std::cerr << "Exporting to PDF" << std::endl;
   std::array<char, PATH_MAX> path;
+
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0, "Export PDF...",
                  nullptr, path, sizeof(path) - 1);
   if (strlen(path) != 0) {
