@@ -2,7 +2,7 @@
 #define SLIDE_DOCUMENTS_H
 
 #include "cairo_wrapper.h"
-#include "dimenions.h"
+#include "dimensions.h"
 #include "styles.h"
 
 namespace slide {

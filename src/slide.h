@@ -3,12 +3,13 @@
 
 #include "cairo_wrapper.h"
 #include "color.h"
-#include "dimenions.h"
+#include "dimensions.h"
 #include "documents.h"
 #include "styles.h"
 #include <ostream>
 #include <string>
 #include <vector>
+
 namespace slide {
 
 class Token {

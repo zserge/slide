@@ -30,13 +30,13 @@ App::App(void) {
   static SetPaletteCmd pal;
   static SetCursorCmd cur;
 
-  cmds_map_["create_file"] = &create;
-  cmds_map_["open_file"] = &open;
-  cmds_map_["export_pdf"] = &pdf;
-  cmds_map_["set_preview_size"] = &prev;
-  cmds_map_["set_palette"] = &pal;
-  cmds_map_["set_text"] = &text;
-  cmds_map_["set_cursor"] = &cur;
+  cmds_map_["create_file"] = { &create };
+  cmds_map_["open_file"] = { &open };
+  cmds_map_["export_pdf"] = { &pdf };
+  cmds_map_["set_preview_size"] = { &prev };
+  cmds_map_["set_palette"] = { &pal };
+  cmds_map_["set_text"] = { &text };
+  cmds_map_["set_cursor"] = { &cur };
 }
 
 void App::Run(void) {
@@ -101,9 +101,10 @@ void CreateFileCmd::Execute(App &app, nlohmann::json &json) {
   std::array<char, PATH_MAX> path;
 
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0,
-                 "New presentation...", nullptr, path, PATH_MAX - 1);
-  if (std::string(path).length() != 0) {
-    app.CurrentFile() = std::string(path);
+                 "New presentation...", nullptr, path.data(), path.size() -1);
+
+  if (std::string(path.begin(), path.end()).length() != 0) {
+    app.CurrentFile() = std::string(path.begin(), path.end());
     webview_set_title(&app.webview(), ("Slide - " + app.CurrentFile()).c_str());
   }
 }
@@ -113,9 +114,10 @@ void OpenFileCmd::Execute(App &app, nlohmann::json &json) {
 
   std::array<char, PATH_MAX> path;
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_OPEN, 0,
-                 "Open presentation...", nullptr, path, sizeof(path) - 1);
-  if (std::string(path).length() != 0) {
-    app.CurrentFile() = path;
+                 "Open presentation...", nullptr, path.data(), path.size() - 1);
+  
+  if (std::string(path.begin(), path.end()).length() != 0) {
+    app.CurrentFile() = std::string(path.begin(), path.end());
     webview_set_title(&app.webview(), ("Slide - " + app.CurrentFile()).c_str());
     std::ifstream ifs(app.CurrentFile());
     std::string text((std::istreambuf_iterator<char>(ifs)),
@@ -130,9 +132,9 @@ void ExportPdfCmd::Execute(App &app, nlohmann::json &json) {
   std::array<char, PATH_MAX> path;
 
   webview_dialog(&app.webview(), WEBVIEW_DIALOG_TYPE_SAVE, 0, "Export PDF...",
-                 nullptr, path, sizeof(path) - 1);
-  if (strlen(path) != 0) {
-    std::string path_str(path);
+                 nullptr, path.data(), path.size() - 1);
+  if (std::string(path.begin(), path.end()).length() != 0) {
+    std::string path_str(path.begin(), path.end());
     const std::string extension(".pdf");
     if (path_str.length() <= extension.length() ||
         path_str.compare(path_str.length() - extension.length(),
